@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Agriwala - Farmer Store</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f1f3f6;
+}
+
+/* HEADER */
+
+.header{
+background:#865065;
+color:white;
+display:flex;
+align-items:center;
+padding:10px;
+}
+
+.logo{
+font-size:22px;
+font-weight:bold;
+color:#07d94d;
+margin-right:20px;
+}
+
+.search{
+flex:1;
+display:flex;
+}
+
+.search input{
+width:100%;
+padding:10px;
+border:none;
+}
+
+.search button{
+background:#febd69;
+border:none;
+padding:10px;
+cursor:pointer;
+}
+
+.cart{
+margin-left:20px;
+cursor:pointer;
+font-size:18px;
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:200px;
+background:white;
+padding:10px;
+}
+
+.sidebar h3{
+border-bottom:1px solid #ccc;
+}
+
+.sidebar div{
+padding:8px;
+cursor:pointer;
+}
+
+.sidebar div:hover{
+background:#eee;
+}
+
+/* PRODUCTS */
+
+.products{
+flex:1;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:20px;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:10px;
+box-shadow:0 0 5px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+.card img{
+width:100%;
+height:140px;
+object-fit:cover;
+}
+
+.price{
+color:#008000;
+font-weight:bold;
+}
+
+button{
+background:#e46409;
+border:none;
+padding:8px 12px;
+cursor:pointer;
+margin:3px;
+}
+
+/* FORM */
+
+.form{
+background:white;
+padding:20px;
+max-width:400px;
+margin:40px auto;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.form input{
+width:100%;
+padding:10px;
+margin:5px 0;
+}
+
+/* CART */
+
+.cartPage{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#f1f3f6;
+z-index:999;
+overflow:auto;
+padding:20px;
+}
+
+.cartItem{
+background:white;
+padding:10px;
+margin:10px 0;
+border-radius:5px;
+}
+
+.remove{
+background:red;
+color:white;
+}
+
+/* TRACK ORDER */
+
+.trackBox{
+margin-top:20px;
+text-align:center;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.container{
+flex-direction:column;
+}
+
+.sidebar{
+width:100%;
+display:flex;
+overflow:auto;
+}
+
+.products{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Farmer Form -->
+
+<div class="form" id="form">
+
+<h2>🌾 Farmer Details</h2>
+
+<input id="name" placeholder="Name">
+<input id="mobile" placeholder="Mobile">
+<input id="location" placeholder="Village / City">
+
+
+<button onclick="detectLocation()">📍 Detect Location</button>
+
+<button onclick="startStore()">Enter Store</button>
+
+</div>
+
+
+<!-- STORE -->
+
+<div id="store" style="display:none">
+
+<div class="header">
+    <div style="background:#10b716;padding:1px;text-align:center;">
+</div>
+
+
+
+<div class="logo">
+    <img src="logo4.jpeg" style="height:140px;">
+</div>
+
+<div class="search">
+<input id="search" placeholder="Search seeds, fertilizer...">
+<button onclick="searchProduct()">Search</button>
+</div>
+
+<div style="display:flex;align-items:center;gap:10px;">
+
+<!-- ✅ REF BOX ALAG -->
+<div style="background:white;color:black;padding:5px 10px;border-radius:5px;margin-left:10px;">
+🎁 Ref: <span id="myRefCode"></span>
+<button onclick="shareRef(event)">Share</button>
+</div>
+
+<!-- ✅ CART ALAG -->
+<div class="cart" onclick="openCart()">
+🛒 Cart (<span id="cartCount">0</span>)
+</div>
+
+<button onclick="logout()" style="background:red;color:white;padding:8px;border:none;border-radius:5px;">
+Logout
+</button>
+
+</div>
+
+</div>
+
+
+<div class="container">
+
+<div class="sidebar">
+
+<h3>Categories</h3>
+
+<div onclick="loadProducts()">All</div>
+<div onclick="filter('Seeds')">Seeds</div>
+<div onclick="filter('Fertilizer')">Fertilizer</div>
+<div onclick="filter('Pesticide')">Pesticide</div>
+<div onclick="filter('Tools')">Tools</div>
+
+</div>
+
+<div class="products" id="products"></div>
+
+</div>
+
+
+<div class="trackBox">
+    <h3>👥 My Referrals</h3>
+<div id="myRefs">Loading...</div>
+<div style="background:white;padding:10px;border-radius:10px;margin:10px;">
+<h4>📊 Referral Summary</h4>
+
+Total: <span id="totalRef">0</span><br>
+✅ Success: <span id="successRef">0</span><br>
+⏳ Pending: <span id="pendingRef">0</span>
+
+</div>
+
+<h3>🚚 Track Your Order</h3>
+
+<input id="trackMobile" placeholder="Enter Mobile Number">
+
+<button onclick="trackOrder()">Track Order</button>
+
+</div>
+
+</div>
+
+
+<!-- CART PAGE -->
+
+<div class="cartPage" id="cartPage">
+    
+
+<h2>Your Cart</h2>
+
+<div id="cartItems"></div>
+
+<br>
+
+<button onclick="checkout()">Checkout</button>
+<button onclick="closeCart()">Back</button>
+
+</div>
+
+
+<script>
+
+async function loadMyReferrals(){
+
+let myRef = localStorage.getItem("myRef")
+
+try{
+
+let res = await fetch(API + "/user/referrals/" + myRef)
+let data = await res.json()
+
+let html = ""
+
+let total = data.length
+let success = 0
+let pending = 0
+
+if(total === 0){
+    html = "No referrals yet 😢"
+}else{
+
+    data.forEach(r=>{
+
+        if(r.status === "Success"){
+            success++
+        }else{
+            pending++
+        }
+
+        html += `
+        <div style="background:#f1f1f1;padding:8px;margin:5px;border-radius:5px;">
+        📱 Mobile: ${r.user} <br>
+        📦 Order ID: ${r.order} <br>
+        🔄 Status: ${r.status}
+        </div>`
+    })
+}
+
+// 🔥 update counts
+document.getElementById("totalRef").innerText = total
+document.getElementById("successRef").innerText = success
+document.getElementById("pendingRef").innerText = pending
+
+document.getElementById("myRefs").innerHTML = html
+
+}catch(err){
+console.log("ref error")
+}
+
+}
+
+
+let urlParams = new URLSearchParams(window.location.search)
+let refFromLink = urlParams.get("ref")
+
+if(refFromLink && !localStorage.getItem("usedRef")){
+localStorage.setItem("usedRef", refFromLink)
+}
+
+
+
+    function shareRef(){
+let myRef = localStorage.getItem("myRef")
+let link = window.location.origin + "?ref=" + myRef
+navigator.clipboard.writeText(link)
+alert("🔗 Referral Link Copied!")
+}
+
+    // 🔥 REF CODE GENERATE
+if(!localStorage.getItem("myRef")){
+    let ref = "REF" + Math.floor(Math.random()*1000000)
+    localStorage.setItem("myRef", ref)
+}
+
+let farmer={}
+let cart=[]
+let products=[]
+
+const API="http://127.0.0.1:8000";
+
+/* LOAD PRODUCTS */
+
+async function loadProducts(){
+
+document.getElementById("products").innerHTML="⏳ Loading products..."
+
+try{
+
+let res=await fetch(API+"/products")
+let data=await res.json()
+
+products=data
+
+displayProducts(products)
+
+}catch(err){
+console.error(err)
+document.getElementById("products").innerHTML="❌ Server slow hai... refresh karo"
+}
+
+}
+
+function displayProducts(list){
+
+let html=""
+
+list.forEach((p,i)=>{
+
+html+=`
+
+<div class="card">
+
+<img src="${p.image}">
+
+<h3>${p.name}</h3>
+
+<p>${p.category}</p>
+
+<p class="price">₹${p.price}</p>
+
+<button onclick="addCart(${i})">Add to Cart</button>
+
+<button onclick="buyNow(${i})" style="background:#008000;color:black;">
+Buy Now
+</button>
+
+</div>
+`
+})
+
+document.getElementById("products").innerHTML=html
+
+}
+
+/* START STORE */
+
+function startStore(){
+
+farmer.name=document.getElementById("name").value
+farmer.mobile=document.getElementById("mobile").value
+farmer.location=document.getElementById("location").value
+
+if(farmer.name==""){
+alert("Enter name")
+return
+}
+
+localStorage.setItem("kisanUser",JSON.stringify(farmer))
+
+document.getElementById("form").style.display="none"
+document.getElementById("store").style.display="block"
+
+loadProducts()
+// 🔥 auto referral attach
+let usedRef = localStorage.getItem("usedRef")
+if(usedRef){
+    farmer.referredBy = usedRef
+}
+}
+
+/* LOGOUT */
+
+function logout(){
+localStorage.removeItem("kisanUser")
+localStorage.removeItem("myRef")
+localStorage.removeItem("usedRef")
+location.reload()
+}
+
+
+/* LOCATION */
+
+function detectLocation(){
+navigator.geolocation.getCurrentPosition(function(pos){
+document.getElementById("location").value=
+pos.coords.latitude+","+pos.coords.longitude
+})
+}
+
+/* CART FIX */
+
+function addCart(i){
+
+cart.push({
+name: products[i].name,
+qty: 1
+})
+
+document.getElementById("cartCount").innerText=cart.length
+
+alert("Added to cart")
+
+}
+
+function buyNow(i){
+
+cart=[{
+name: products[i].name,
+qty:1
+}]
+
+checkout()
+
+}
+
+/* CART UI */
+
+function openCart(){
+
+document.getElementById("store").style.display="none"
+document.getElementById("cartPage").style.display="block"
+
+let html=""
+
+cart.forEach((p,i)=>{
+html+=`
+<div class="cartItem">
+${p.name} x ${p.qty}
+<button class="remove" onclick="removeCart(${i})">Remove</button>
+</div>
+`
+})
+
+document.getElementById("cartItems").innerHTML=html
+
+}
+
+function removeCart(i){
+cart.splice(i,1)
+openCart()
+document.getElementById("cartCount").innerText=cart.length
+}
+
+function closeCart(){
+document.getElementById("store").style.display="block"
+document.getElementById("cartPage").style.display="none"
+}
+
+/* SEARCH */
+
+function searchProduct(){
+let s=document.getElementById("search").value.toLowerCase()
+let list=products.filter(p=>p.name.toLowerCase().includes(s))
+displayProducts(list)
+}
+
+/* FILTER */
+
+function filter(cat){
+let list=products.filter(p=>p.category==cat)
+displayProducts(list)
+}
+
+/* CHECKOUT */
+
+async function checkout(){
+
+try{
+
+// 🔥 referral input lo
+
+let ref = farmer.referredBy || localStorage.getItem("usedRef")
+
+// ❌ No instant discount
+let discount = 0
+
+// 🔥 order object update
+let order={
+    farmer:farmer,
+    items:cart,
+    referral: ref,
+    myRef: localStorage.getItem("myRef"),
+    discount: discount
+}
+
+await fetch(API+"/order",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(order)
+})
+
+alert("✅ Order Placed Successfully")
+
+cart=[]
+document.getElementById("cartCount").innerText=0
+
+closeCart()
+
+}catch(err){
+console.error(err)
+alert("❌ Order failed")
+}
+
+}
+
+async function loadWallet(){
+
+let myRef = localStorage.getItem("myRef")
+
+try{
+let res = await fetch(API + "/wallet/" + myRef)
+let data = await res.json()
+
+document.getElementById("wallet").innerText = data.balance || 0
+
+}catch(err){
+console.log("wallet error")
+}
+
+}
+
+/* TRACK */
+
+async function trackOrder(){
+
+let mobile=document.getElementById("trackMobile").value
+
+try{
+
+let res=await fetch(API+"/track/"+mobile)
+let data=await res.json()
+
+alert("🚚 Status: "+data.status)
+
+}catch(err){
+alert("❌ Error tracking")
+}
+
+}
+
+/* AUTO LOAD */
+
+window.onload=function(){
+    loadWallet()
+    loadReward()
+    loadMyReferrals()
+
+document.getElementById("myRefCode").innerText = localStorage.getItem("myRef")
+
+// 🔥 wake up server
+fetch(API+"/products")
+
+let user=localStorage.getItem("kisanUser")
+
+if(user){
+
+farmer=JSON.parse(user)
+
+document.getElementById("form").style.display="none"
+document.getElementById("store").style.display="block"
+
+loadProducts()
+
+}
+
+}
+
+async function loadReward(){
+
+let myRef = localStorage.getItem("myRef")
+
+try{
+
+let res = await fetch(API + "/reward/" + myRef)
+let data = await res.json()
+
+if(data.reward && data.status === "approved"){
+    document.getElementById("rewardBox").innerHTML =
+    "🎁 Reward: " + data.reward + " ✅"
+}else{
+    document.getElementById("rewardBox").innerHTML =
+    "🎁 No reward yet"
+}
+
+}catch(err){
+console.log("reward error")
+}
+
+}
+
+</script>
+</body>
+</html>
