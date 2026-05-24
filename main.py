@@ -91,7 +91,7 @@ async def upload_image(file: UploadFile = File(...)):
     with open(path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    url = f"http://127.0.0.1:8000/images/{filename}"
+    url = f"https://agriwala.onrender.com/images/{filename}"
     return {"image": url}
 
 # ---------------- PRODUCTS ----------------
