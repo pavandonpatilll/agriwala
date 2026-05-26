@@ -14,7 +14,7 @@ font-family:'Segoe UI',sans-serif;
 }
 
 body{
-background:linear-gradient(135deg,#fd5102,#4052bc,#04ed08);
+background:linear-gradient(135deg,#c59143,#151616,#46ed04);
 min-height:100vh;
 color:rgb(2, 1, 1);
 overflow-x:hidden;
@@ -814,26 +814,50 @@ pos.coords.latitude+","+pos.coords.longitude
 }
 
 /* CART FIX */
-
 function addCart(i){
 
+let existing = cart.find(x=>x.name === products[i].name)
+
+if(existing){
+
+existing.qty += 1
+
+}else{
+
 cart.push({
+
 name: products[i].name,
-qty: 1
+
+price: products[i].price,
+
+image: products[i].image,
+
+qty:1
+
 })
-
-document.getElementById("cartCount").innerText=cart.length
-
-alert("Added to cart")
 
 }
 
+updateCartCount()
+
+alert("✅ Added To Cart")
+
+}
 function buyNow(i){
 
 cart=[{
+
 name: products[i].name,
+
+price: products[i].price,
+
+image: products[i].image,
+
 qty:1
+
 }]
+
+updateCartCount()
 
 checkout()
 
@@ -867,10 +891,25 @@ openCart()
 document.getElementById("cartCount").innerText=cart.length
 }
 
+function updateCartCount(){
+
+let totalQty = 0
+
+cart.forEach(item=>{
+
+totalQty += item.qty
+
+})
+
+document.getElementById("cartCount").innerText = totalQty
+
+}
+
 function closeCart(){
 document.getElementById("store").style.display="block"
 document.getElementById("cartPage").style.display="none"
 }
+
 
 /* SEARCH */
 
@@ -888,45 +927,122 @@ displayProducts(list)
 }
 
 /* CHECKOUT */
-
 async function checkout(){
+
+if(cart.length===0){
+
+alert("🛒 Cart Empty")
+
+return
+
+}
+
+let total = 0
+
+cart.forEach(item=>{
+
+total += item.price * item.qty
+
+})
 
 try{
 
-// 🔥 referral input lo
+let res = await fetch(API + "/create-payment",{
 
-let ref = farmer.referredBy || localStorage.getItem("usedRef")
-
-// ❌ No instant discount
-let discount = 0
-
-// 🔥 order object update
-let order={
-    farmer:farmer,
-    items:cart,
-    referral: ref,
-    myRef: localStorage.getItem("myRef"),
-    discount: discount
-}
-
-await fetch(API+"/order",{
 method:"POST",
+
 headers:{
 "Content-Type":"application/json"
 },
-body:JSON.stringify(order)
+
+body:JSON.stringify({
+
+amount: total,
+
+name: farmer.name,
+
+mobile: farmer.mobile
+
 })
 
-alert("✅ Order Placed Successfully")
+})
+
+let data = await res.json()
+
+const cashfree = Cashfree({
+mode:"sandbox"
+})
+
+cashfree.checkout({
+
+paymentSessionId: data.payment_session_id,
+
+redirectTarget:"_modal"
+
+}).then(async(result)=>{
+
+if(result.error){
+
+alert("❌ Payment Failed")
+
+return
+
+}
+
+if(result.paymentDetails){
+
+let ref = farmer.referredBy || localStorage.getItem("usedRef")
+
+let order={
+
+farmer: farmer,
+
+items: cart,
+
+total: total,
+
+payment_id: result.paymentDetails.paymentId,
+
+payment_status: "PAID",
+
+referral: ref,
+
+myRef: localStorage.getItem("myRef"),
+
+discount: 0
+
+}
+
+await fetch(API+"/order",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(order)
+
+})
+
+alert("✅ Payment Successful")
 
 cart=[]
-document.getElementById("cartCount").innerText=0
+
+updateCartCount()
 
 closeCart()
 
+}
+
+})
+
 }catch(err){
-console.error(err)
-alert("❌ Order failed")
+
+console.log(err)
+
+alert("❌ Payment Error")
+
 }
 
 }
@@ -1017,5 +1133,6 @@ console.log("reward error")
 }
 
 </script>
+<script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </body>
 </html>
