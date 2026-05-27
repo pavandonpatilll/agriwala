@@ -781,6 +781,11 @@ alert("Enter name")
 return
 }
 
+if(!/^[0-9]{10}$/.test(farmer.mobile)){
+alert("❌ Enter valid 10 digit mobile number")
+return
+}
+
 localStorage.setItem("kisanUser",JSON.stringify(farmer))
 
 document.getElementById("form").style.display="none"

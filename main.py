@@ -228,7 +228,7 @@ def create_payment(data: dict):
         "order_currency": "INR",
 
         "customer_details": {
-            "customer_id": mobile,
+            "customer_id": "USER_" + mobile,
             "customer_name": name,
             "customer_phone": mobile
         },
