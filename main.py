@@ -426,16 +426,13 @@ def place_order(data: dict):
     }
 
 # ---------------- GET ORDERS ----------------
-
 @app.get("/orders")
 def get_orders():
 
     conn = get_conn()
     cursor = conn.cursor()
 
-    cursor.execute(
-        "SELECT * FROM orders ORDER BY id DESC"
-    )
+    cursor.execute("SELECT * FROM orders ORDER BY id DESC")
 
     rows = cursor.fetchall()
 
@@ -444,27 +441,21 @@ def get_orders():
     for r in rows:
 
         orders.append({
-
             "id": r[0],
             "name": r[1],
             "mobile": r[2],
             "location": r[3],
             "items": json.loads(r[4]),
-            "total": r[5],
-            "payment_id": r[6],
-            "payment_status": r[7],
-            "status": r[8],
-            "date": r[9],
-            "referral": r[10],
-            "myRef": r[11],
-            "discount": r[12]
-
+            "status": r[5],
+            "date": r[6],
+            "referral": r[7],
+            "myRef": r[8],
+            "discount": r[9]
         })
 
     conn.close()
 
     return orders
-
 # ---------------- UPDATE ORDER ----------------
 
 @app.put("/update-order/{id}")
