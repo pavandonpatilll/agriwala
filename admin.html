@@ -284,11 +284,10 @@ body:JSON.stringify(product)
 
 alert("✅ Added")
 
-// clear inputs
-name.value=""
-price.value=""
-category.value=""
-imageFile.value=""
+document.getElementById("productName").value=""
+document.getElementById("productPrice").value=""
+document.getElementById("productCategory").value=""
+document.getElementById("imageFile").value=""
 
 loadProducts()
 }
@@ -350,7 +349,9 @@ o.items?.forEach(i=>{
 itemsHTML+=`<div class="item-box">${i.name} x ${i.qty}</div>`
 })
 
-let statusClass=o.status==="Placed"?"placed order":"pending order"
+let statusClass = o.status === "Delivered"
+? "delivered"
+: "pending"
 
 html+=`
 <div class="order">

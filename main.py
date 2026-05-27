@@ -441,21 +441,27 @@ def get_orders():
     for r in rows:
 
         orders.append({
+
             "id": r[0],
             "name": r[1],
             "mobile": r[2],
             "location": r[3],
             "items": json.loads(r[4]),
-            "status": r[5],
-            "date": r[6],
-            "referral": r[7],
-            "myRef": r[8],
-            "discount": r[9]
+            "total": r[5],
+            "payment_id": r[6],
+            "payment_status": r[7],
+            "status": r[8],
+            "date": r[9],
+            "referral": r[10],
+            "myRef": r[11],
+            "discount": r[12]
+
         })
 
     conn.close()
 
     return orders
+
 # ---------------- UPDATE ORDER ----------------
 
 @app.put("/update-order/{id}")
