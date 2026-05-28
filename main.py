@@ -24,7 +24,7 @@ app.add_middleware(
 CASHFREE_APP_ID = os.getenv("CASHFREE_APP_ID")
 CASHFREE_SECRET_KEY = os.getenv("CASHFREE_SECRET_KEY")
 
-CASHFREE_URL = "https://sandbox.cashfree.com/pg/orders"
+CASHFREE_URL = CASHFREE_URL = "https://api.cashfree.com/pg/orders"
 
 # ---------------- FOLDERS ----------------
 
