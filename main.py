@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from fastapi.staticfiles import StaticFiles # type: ignore
-import sqlite3
+import psycopg2
 import shutil
 import json
 import os
@@ -35,12 +35,14 @@ app.mount("/images", StaticFiles(directory="images"), name="images")
 
 # ---------------- DB ----------------
 
+import os
+import psycopg2
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 def get_conn():
-    return sqlite3.connect(
-        "kisan_mart.db",
-        timeout=10,
-        check_same_thread=False
-    )
+    return psycopg2.connect(DATABASE_URL)
+
 
 def init_db():
 
@@ -112,7 +114,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-init_db()
+#init_db()
 
 # ---------------- IMAGE UPLOAD ----------------
 
@@ -142,7 +144,12 @@ def get_products():
     conn = get_conn()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM products ORDER BY id DESC")
+    cursor.execute("""
+SELECT id,name,price,category,image
+FROM products
+ORDER BY id DESC
+""")
+    
 
     rows = cursor.fetchall()
 
@@ -169,14 +176,19 @@ def add_product(data: dict):
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO products (name,price,category,image) VALUES (?,?,?,?)",
-        (
-            data.get("name"),
-            data.get("price"),
-            data.get("category"),
-            data.get("image")
-        )
+    """
+    INSERT INTO products
+    (name,price,category,image)
+    VALUES (%s,%s,%s,%s)
+    """,
+    (
+        data.get("name"),
+        int(data.get("price")),
+        data.get("category"),
+        data.get("image")
     )
+)
+    
 
     conn.commit()
     conn.close()
@@ -192,7 +204,7 @@ def delete_product(id: int):
     cursor = conn.cursor()
 
     cursor.execute(
-        "DELETE FROM products WHERE id=?",
+        "DELETE FROM products WHERE id=%s",
         (id,)
     )
 
