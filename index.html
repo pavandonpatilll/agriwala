@@ -14,7 +14,7 @@ font-family:'Segoe UI',sans-serif;
 }
 
 body{
-background:linear-gradient(135deg,#7e9462fb,#fc4801,#01f201);
+background:linear-gradient(135deg,#8da372fb,#2a1eb0,#01f201);
 min-height:100vh;
 color:rgb(2, 1, 1);
 overflow-x:hidden;
@@ -725,9 +725,24 @@ try{
 let res=await fetch(API+"/products")
 let data=await res.json()
 
-products=data
+products = data
 
-displayProducts(products)
+const params = new URLSearchParams(window.location.search)
+const productId = params.get("id")
+
+if(productId){
+
+    let singleProduct = products.filter(
+        p => p.id == productId
+    )
+
+    displayProducts(singleProduct)
+
+}else{
+
+    displayProducts(products)
+
+}
 
 }catch(err){
 console.error(err)

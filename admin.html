@@ -307,11 +307,19 @@ let html=""
 data.forEach(p=>{
 html+=`
 <div class="card">
+
+<p><b>ID: ${p.id}</b></p>
+
 <img src="${p.image}">
 <h4>${p.name}</h4>
 <p>₹${p.price}</p>
-<button onclick="deleteProduct(${p.id})">Delete</button>
+
+<button onclick="deleteProduct(${p.id})">
+Delete
+</button>
+
 </div>`
+
 })
 
 products.innerHTML=html
