@@ -234,7 +234,7 @@ def create_payment(data: dict):
         },
 
         "order_meta": {
-            "return_url": "https://agriwala-1.onrender.com"
+            "return_url": "https://krushicom.com"
         }
     }
 
