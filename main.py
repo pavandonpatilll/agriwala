@@ -8,6 +8,7 @@ import os
 import uuid
 import requests
 from datetime import datetime
+from fastapi import Request # type: ignore
 
 app = FastAPI()
 
@@ -735,3 +736,13 @@ def custom_reward(data: dict):
     return {
         "message": "Reward Given"
     }
+
+@app.post("/cashfree-webhook")
+async def cashfree_webhook(request: Request):
+
+    data = await request.json()
+
+    print("WEBHOOK RECEIVED")
+    print(data)
+
+    return {"status": "ok"}
