@@ -81,6 +81,7 @@ def init_db():
     """)
 
     # REFERRALS
+    
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS referrals(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
