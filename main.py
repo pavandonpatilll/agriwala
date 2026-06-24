@@ -80,6 +80,13 @@ def init_db():
     )
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS pending_orders(
+     order_id TEXT PRIMARY KEY,
+       order_data TEXT
+           )
+                 """)
+
     # REFERRALS
     
     cursor.execute("""
@@ -215,6 +222,20 @@ def create_payment(data: dict):
     mobile = data.get("mobile")
 
     order_id = "ORDER_" + str(uuid.uuid4())[:8]
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO pending_orders(order_id, order_data) VALUES(?, ?)",
+        (
+            order_id,
+            json.dumps(data)
+        )
+    )
+
+    conn.commit()
+    conn.close()
 
     headers = {
         "accept": "application/json",
@@ -740,10 +761,81 @@ def custom_reward(data: dict):
 
 @app.post("/cashfree-webhook")
 async def cashfree_webhook(request: Request):
-
     data = await request.json()
 
     print("WEBHOOK RECEIVED")
     print(data)
 
+    if data.get("type") == "PAYMENT_SUCCESS_WEBHOOK":
+
+        order_id = data["data"]["order"]["order_id"]
+
+        conn = get_conn()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT order_data FROM pending_orders WHERE order_id=?",
+            (order_id,)
+        )
+
+        row = cursor.fetchone()
+
+        if row:
+            print("PENDING ORDER FOUND")
+
+            order_data = json.loads(row[0])
+
+            farmer = order_data.get("farmer", {})
+            items = json.dumps(order_data.get("items", []))
+
+            cursor.execute("""
+
+            INSERT INTO orders(
+
+                name,
+                mobile,
+                location,
+                items,
+                total,
+                payment_id,
+                payment_status,
+                status,
+                created_at,
+                referral,
+                myRef,
+                discount
+
+            )
+
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
+
+            """, (
+
+                farmer.get("name"),
+                farmer.get("mobile"),
+                farmer.get("location"),
+                items,
+                order_data.get("amount", 0),
+                data["data"]["payment"]["cf_payment_id"],
+                "PAID",
+                "Pending",
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                order_data.get("referral", ""),
+                order_data.get("myRef", ""),
+                order_data.get("discount", 0)
+
+            ))
+
+            cursor.execute(
+                "DELETE FROM pending_orders WHERE order_id=?",
+                (order_id,)
+            )
+
+            conn.commit()
+            
+            print("ORDER SAVED FROM WEBHOOK")
+
+        conn.close()
+
     return {"status": "ok"}
+
