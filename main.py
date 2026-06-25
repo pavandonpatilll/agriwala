@@ -1,3 +1,5 @@
+from tkinter import INSERT
+
 from fastapi import FastAPI, UploadFile, File # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from fastapi.staticfiles import StaticFiles # type: ignore
@@ -53,11 +55,14 @@ def init_db():
     # PRODUCTS
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS products(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        price INTEGER,
-        category TEXT,
-        image TEXT
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    price INTEGER,
+    category TEXT,
+    image TEXT,
+    image2 TEXT,
+    image3 TEXT,
+    image4 TEXT
     )
     """)
 
@@ -160,12 +165,15 @@ def get_products():
     for r in rows:
 
         products.append({
-            "id": r[0],
-            "name": r[1],
-            "price": r[2],
-            "category": r[3],
-            "image": r[4]
-        })
+    "id": r[0],
+    "name": r[1],
+    "price": r[2],
+    "category": r[3],
+    "image": r[4],
+    "image2": r[5],
+    "image3": r[6],
+    "image4": r[7]
+})
 
     conn.close()
 
@@ -178,12 +186,15 @@ def add_product(data: dict):
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO products (name,price,category,image) VALUES (?,?,?,?)",
+        "INSERT INTO products (name,price,category,image,image2,image3,image4) VALUES (?,?,?,?,?,?,?)",
         (
             data.get("name"),
             data.get("price"),
             data.get("category"),
-            data.get("image")
+            data.get("image"),
+            data.get("image2"),
+            data.get("image3"),
+            data.get("image4")
         )
     )
 
@@ -832,10 +843,23 @@ async def cashfree_webhook(request: Request):
             )
 
             conn.commit()
-            
+
             print("ORDER SAVED FROM WEBHOOK")
 
         conn.close()
 
     return {"status": "ok"}
 
+@app.get("/test")
+def test():
+
+    conn=get_conn()
+    cursor=conn.cursor()
+
+    cursor.execute("PRAGMA table_info(products)")
+
+    rows=cursor.fetchall()
+
+    conn.close()
+
+    return rows

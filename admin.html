@@ -186,6 +186,11 @@ border-radius:5px;
 <input id="productPrice" placeholder="Price">
 <input id="productCategory" placeholder="Description">
 <input type="file" id="imageFile">
+<input type="file" id="imageFile2">
+
+<input type="file" id="imageFile3">
+
+<input type="file" id="imageFile4">
 <button onclick="addProduct()">Add</button>
 </div>
 
@@ -265,25 +270,63 @@ let data=await res.json()
 
 return data.image
 }
+async function uploadImageById(id){
+
+let file=document.getElementById(id).files[0]
+
+if(!file){
+return ""
+}
+
+let form=new FormData()
+
+form.append("file",file)
+
+let res=await fetch(API+"/upload-image",{
+method:"POST",
+body:form
+})
+
+let data=await res.json()
+
+return data.image
+
+}
 
 /* ADD PRODUCT */
 async function addProduct(){
 
 let image=await uploadImage()
+let image2=await uploadImageById("imageFile2")
+
+let image3=await uploadImageById("imageFile3")
+
+let image4=await uploadImageById("imageFile4")
+
 if(image==="") return
 
 let product={
 name: document.getElementById("productName").value,
 price: document.getElementById("productPrice").value,
 category: document.getElementById("productCategory").value,
-image: image
+
+image: image,
+image2: image2,
+image3: image3,
+image4: image4
 }
+
 
 await fetch(API+"/add-product",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify(product)
 })
+
+document.getElementById("imageFile").value=""
+document.getElementById("imageFile2").value=""
+document.getElementById("imageFile3").value=""
+document.getElementById("imageFile4").value=""
 
 alert("✅ Added")
 

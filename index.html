@@ -491,6 +491,63 @@ color:white;
 }
 
 }
+#productPage{
+background:#fff;
+min-height:100vh;
+}
+
+#pImage{
+width:100%;
+max-width:350px;
+height:300px;
+object-fit:contain;
+display:block;
+margin:auto;
+background:#f5f5f5;
+border-radius:20px;
+padding:10px;
+}
+
+.productDetails{
+text-align:center;
+}
+
+#pName{
+margin-top:15px;
+font-size:24px;
+}
+
+#pPrice{
+color:green;
+}
+
+.qtyBox{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:15px;
+margin:20px 0;
+}
+
+.qtyBox button{
+padding:10px 15px;
+font-size:18px;
+}
+
+.btns{
+display:flex;
+gap:10px;
+justify-content:center;
+margin-top:20px;
+}
+
+.btns button{
+padding:12px 20px;
+border:none;
+border-radius:12px;
+font-size:16px;
+cursor:pointer;
+}
 
 </style>
 </head>
@@ -763,24 +820,16 @@ let html=""
 
 list.forEach((p,i)=>{
 
-html+=`
-
-<div class="card">
-
+    html += `
+<div class="card" onclick="openProduct(${i})">
 <img src="${p.image}">
-
 <h3>${p.name}</h3>
-
 <p>${p.category}</p>
-
 <p class="price">₹${p.price}</p>
-
-<button onclick="addCart(${i})">Add to Cart</button>
-
-<button onclick="buyNow(${i})" style="background:#008000;color:black;">
+<button onclick="event.stopPropagation(); addCart(${i})">Add to Cart</button>
+<button onclick="event.stopPropagation(); buyNow(${i})" style="background:#008000;color:black;">
 Buy Now
 </button>
-
 </div>
 `
 })
@@ -1161,7 +1210,162 @@ console.log("reward error")
 
 }
 
+let selectedProduct = null;
+
+function openProduct(i){
+
+selectedProduct = products[i];
+
+document.getElementById("store").style.display = "none";
+
+document.getElementById("productPage").style.display = "block";
+
+document.getElementById("pImage").src =
+selectedProduct.image;
+
+document.getElementById("pName").innerText =
+selectedProduct.name;
+
+document.getElementById("pPrice").innerText =
+"₹" + selectedProduct.price;
+
+document.getElementById("pDesc").innerText =
+selectedProduct.category;
+
+qty = 1;
+
+document.getElementById("qty").innerText = qty;
+
+updatePrice();
+
+}
+
+function closeProduct(){
+
+document.getElementById("productPage").style.display = "none";
+
+document.getElementById("store").style.display = "block";
+
+}
+
+function buySelectedProduct(){
+
+cart = [{
+
+name: selectedProduct.name,
+
+price: selectedProduct.price,
+
+image: selectedProduct.image,
+
+qty:1
+
+}];
+
+updateCartCount();
+
+checkout();
+
+}
+let qty = 1;
+
+function plusQty(){
+
+qty++;
+
+document.getElementById("qty").innerText = qty;
+
+updatePrice();
+
+}
+
+function minusQty(){
+
+if(qty > 1){
+
+qty--;
+
+document.getElementById("qty").innerText = qty;
+
+updatePrice();
+
+}
+
+}
+
+function updatePrice(){
+
+document.getElementById("finalPrice").innerText =
+"Total : ₹" + (selectedProduct.price * qty);
+
+}
+
+function addSelectedToCart(){
+
+cart.push({
+
+name:selectedProduct.name,
+
+price:selectedProduct.price,
+
+image:selectedProduct.image,
+
+qty:qty
+
+});
+
+updateCartCount();
+
+alert("✅ Added To Cart");
+
+}
+
 </script>
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+<div id="productPage" style="display:none; padding:20px;">
+
+<button class="backBtn" onclick="closeProduct()">
+⬅ Back
+</button>
+
+<div class="productDetails">
+
+<img id="pImage">
+
+<h2 id="pName"></h2>
+
+<h1 id="pPrice"></h1>
+
+<div class="qtyBox">
+
+<button onclick="minusQty()">➖</button>
+
+<span id="qty">1</span>
+
+<button onclick="plusQty()">➕</button>
+
+</div>
+
+<h3 id="finalPrice"></h3>
+
+<h4>📦 Product Details</h4>
+
+<p id="pDesc"></p>
+
+<div class="btns">
+
+<button onclick="addSelectedToCart()">
+🛒 Add To Cart
+</button>
+
+<button onclick="buySelectedProduct()">
+⚡ Buy Now
+</button>
+
+</div>
+
+</div>
+
+</div>
 </body>
 </html>
