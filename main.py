@@ -1,5 +1,3 @@
-from tkinter import INSERT
-
 from fastapi import FastAPI, UploadFile, File # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from fastapi.staticfiles import StaticFiles # type: ignore
