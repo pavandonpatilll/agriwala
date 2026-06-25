@@ -14,7 +14,7 @@ font-family:'Segoe UI',sans-serif;
 }
 
 body{
-background:linear-gradient(135deg,#acb787,#acb787,#acb787);
+background:linear-gradient(135deg,#f5f3f5ea,#f5f3f5ea,#fcfafcea);
 min-height:100vh;
 color:rgb(2, 1, 1);
 overflow-x:hidden;
@@ -65,7 +65,7 @@ box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
 .logo img{
-height:90px;
+height:10px;
 filter:drop-shadow(0 0 20px rgba(253, 254, 254, 0.968));
 transition:0.4s;
 }
@@ -731,6 +731,10 @@ text-align:center;
 
 <script>
 
+    let startX = 0;
+let currentImages = [];
+let currentIndex = 0;
+
 async function loadMyReferrals(){
 
 let myRef = localStorage.getItem("myRef")
@@ -1254,6 +1258,16 @@ document.getElementById("productPage").style.display = "block";
 
 document.getElementById("pImage").src =
 selectedProduct.image;
+
+currentImages = [
+selectedProduct.image,
+selectedProduct.image2 || selectedProduct.image,
+selectedProduct.image3 || selectedProduct.image,
+selectedProduct.image4 || selectedProduct.image
+];
+
+currentIndex = 0;
+
 document.getElementById("thumb1").src =
 selectedProduct.image;
 
@@ -1378,6 +1392,49 @@ alert("✅ Added To Cart");
 function changePhoto(src){
 
 document.getElementById("pImage").src = src;
+
+}
+
+const pImage = document.getElementById("pImage");
+
+pImage.addEventListener("touchstart",(e)=>{
+
+startX = e.touches[0].clientX;
+
+});
+
+pImage.addEventListener("touchend",(e)=>{
+
+let endX = e.changedTouches[0].clientX;
+
+if(startX - endX > 50){
+
+showImage(currentIndex + 1);
+
+}
+
+if(endX - startX > 50){
+
+showImage(currentIndex - 1);
+
+}
+
+});
+
+function showImage(index){
+
+if(index < 0){
+index = currentImages.length - 1;
+}
+
+if(index >= currentImages.length){
+index = 0;
+}
+
+currentIndex = index;
+
+document.getElementById("pImage").src =
+currentImages[currentIndex];
 
 }
 
