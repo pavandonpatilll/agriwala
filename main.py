@@ -853,12 +853,12 @@ async def cashfree_webhook(request: Request):
 @app.get("/test")
 def test():
 
-    conn=get_conn()
-    cursor=conn.cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
 
     cursor.execute("PRAGMA table_info(products)")
 
-    rows=cursor.fetchall()
+    rows = cursor.fetchall()
 
     conn.close()
 
