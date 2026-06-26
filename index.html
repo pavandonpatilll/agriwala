@@ -610,6 +610,23 @@ border-color:#28a745;
 transform:scale(1.05);
 }
 
+.card{
+position:relative;
+}
+
+.discountSticker{
+position:absolute;
+top:10px;
+left:10px;
+background:#ff3b30;
+color:#fff;
+padding:5px 10px;
+border-radius:8px;
+font-size:13px;
+font-weight:bold;
+z-index:10;
+}
+
 </style>
 </head>
 
@@ -889,7 +906,30 @@ list.forEach((p,i)=>{
 <img src="${p.image}">
 <h3>${p.name}</h3>
 <p>${p.category}</p>
+${p.discount > 0 ? `
+<div class="discountSticker">${p.discount}% OFF</div>
+
+<p class="price">
+<span style="color:red;font-size:22px;font-weight:bold;">
+₹${Math.round(p.price - (p.price * p.discount / 100))}
+</span>
+
+<br>
+
+<span style="text-decoration:line-through;color:gray;">
+₹${p.price}
+</span>
+
+<br>
+
+<span style="color:green;font-size:14px;">
+You Save ₹${Math.round(p.price * p.discount / 100)}
+</span>
+
+</p>
+` : `
 <p class="price">₹${p.price}</p>
+`}
 <button onclick="event.stopPropagation(); addCart(${i})">Add to Cart</button>
 <button onclick="event.stopPropagation(); buyNow(${i})" style="background:#008000;color:black;">
 Buy Now
@@ -1331,8 +1371,46 @@ document.getElementById("thumb4").onclick =
 document.getElementById("pName").innerText =
 selectedProduct.name;
 
-document.getElementById("pPrice").innerText =
-"₹" + selectedProduct.price;
+let finalPrice = selectedProduct.price;
+
+if(selectedProduct.discount > 0){
+
+finalPrice = Math.round(
+selectedProduct.price -
+(selectedProduct.price * selectedProduct.discount / 100)
+);
+
+document.getElementById("pPrice").innerHTML = `
+
+<div class="discountSticker">
+${selectedProduct.discount}% OFF
+</div>
+
+<h2 style="color:red;">
+₹${finalPrice}
+</h2>
+
+<p style="text-decoration:line-through;color:gray;">
+₹${selectedProduct.price}
+</p>
+
+<p style="color:green;font-weight:bold;">
+💚 You Save ₹${selectedProduct.price-finalPrice}
+</p>
+
+`;
+
+}else{
+
+document.getElementById("pPrice").innerHTML = `
+
+<h2>
+₹${selectedProduct.price}
+</h2>
+
+`;
+
+}
 
 document.getElementById("pDesc").innerText =
 selectedProduct.category;
@@ -1400,8 +1478,19 @@ updatePrice();
 
 function updatePrice(){
 
+let price = selectedProduct.price;
+
+if(selectedProduct.discount > 0){
+
+price = Math.round(
+selectedProduct.price -
+(selectedProduct.price * selectedProduct.discount / 100)
+);
+
+}
+
 document.getElementById("finalPrice").innerText =
-"Total : ₹" + (selectedProduct.price * qty);
+"Total : ₹" + (price * qty);
 
 }
 
@@ -1502,7 +1591,7 @@ currentImages[currentIndex];
 
 <h2 id="pName"></h2>
 
-<h1 id="pPrice"></h1>
+<div id="pPrice"></div>
 
 <div class="qtyBox">
 
