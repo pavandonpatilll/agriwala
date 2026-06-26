@@ -555,20 +555,40 @@ padding:10px 15px;
 font-size:18px;
 }
 .btns{
+
 display:flex;
-gap:10px;
-margin-top:10px;
+
+justify-content:center;
+
+align-items:center;
+
+gap:15px;
+
+margin-top:20px;
+
+width:100%;
+
 }
 
 .btns button{
-padding:10px;
-border:none;
-border-radius:10px;
-color:white;
-font-weight:bold;
-cursor:pointer;
-}
 
+flex:1;
+
+max-width:180px;
+
+height:48px;
+
+border:none;
+
+border-radius:10px;
+
+font-size:16px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
 .btns button:first-child{
 background:#28a745;
 }
@@ -625,6 +645,60 @@ border-radius:8px;
 font-size:13px;
 font-weight:bold;
 z-index:10;
+}
+
+.productSticker{
+
+display:inline-block;
+
+background:#ff3b30;
+
+color:white;
+
+padding:6px 14px;
+
+border-radius:8px;
+
+font-size:16px;
+
+font-weight:bold;
+
+margin-bottom:12px;
+
+}
+
+.imageBox{
+
+position:relative;
+
+width:100%;
+
+}
+
+#productDiscount{
+
+position:absolute;
+
+top:10px;
+
+left:10px;
+
+z-index:100;
+
+}
+
+.productSticker{
+
+background:#ff3b30;
+
+color:white;
+
+padding:6px 12px;
+
+border-radius:8px;
+
+font-weight:bold;
+
 }
 
 </style>
@@ -1368,6 +1442,8 @@ document.getElementById("thumb3").onclick =
 document.getElementById("thumb4").onclick =
 ()=>showImage(3);
 
+
+
 document.getElementById("pName").innerText =
 selectedProduct.name;
 
@@ -1380,11 +1456,10 @@ selectedProduct.price -
 (selectedProduct.price * selectedProduct.discount / 100)
 );
 
-document.getElementById("pPrice").innerHTML = `
+document.getElementById("productDiscount").innerHTML =
+`<div class="productSticker">${selectedProduct.discount}% OFF</div>`;
 
-<div class="discountSticker">
-${selectedProduct.discount}% OFF
-</div>
+document.getElementById("pPrice").innerHTML = `
 
 <h2 style="color:red;">
 ₹${finalPrice}
@@ -1401,6 +1476,8 @@ ${selectedProduct.discount}% OFF
 `;
 
 }else{
+
+
 
 document.getElementById("pPrice").innerHTML = `
 
@@ -1575,7 +1652,9 @@ currentImages[currentIndex];
 
 <div class="productDetails">
 
+
 <img id="pImage">
+
 
 <div class="thumbs">
 

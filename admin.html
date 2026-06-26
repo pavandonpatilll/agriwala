@@ -389,48 +389,6 @@ await fetch(API+"/delete-product/"+id,{method:"DELETE"})
 loadProducts()
 }
 
-async function setDiscount(id,name,current){
-
-let discount = prompt(
-"Enter Discount % for\n\n"+name,
-current
-);
-
-if(discount===null) return;
-
-discount = parseInt(discount);
-
-if(isNaN(discount) || discount<0 || discount>100){
-
-alert("Enter discount between 0 and 100");
-
-return;
-
-}
-
-await fetch(API+"/update-discount",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-id:id,
-
-discount:discount
-
-})
-
-});
-
-alert("✅ Discount Updated");
-
-loadProducts();
-
-}
 
 /* ORDERS */
 async function loadOrders(){
@@ -530,6 +488,37 @@ body: JSON.stringify({
 alert("🎁 Reward Given")
 }
 
+
+async function setDiscount(id,name,current){
+
+let discount = prompt(
+"Discount (%) for " + name,
+current
+);
+
+if(discount===null) return;
+
+await fetch(API+"/update-discount/"+id,{
+
+method:"PUT",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+discount:parseInt(discount)
+
+})
+
+});
+
+alert("✅ Discount Updated");
+
+loadProducts();
+
+}
 </script>
 
 </body>

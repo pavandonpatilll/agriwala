@@ -52,7 +52,7 @@ def init_db():
 
     # PRODUCTS
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS products(
+CREATE TABLE IF NOT EXISTS products(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     price INTEGER,
@@ -62,8 +62,8 @@ def init_db():
     image3 TEXT,
     image4 TEXT,
     discount INTEGER DEFAULT 0
-    )
-    """)
+)
+""")
 
     try:
         cursor.execute("""
