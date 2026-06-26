@@ -14,7 +14,7 @@ font-family:'Segoe UI',sans-serif;
 }
 
 body{
-background:linear-gradient(135deg,#f5f3f5ea,#f5f3f5ea,#fcfafcea);
+background:linear-gradient(135deg,#b6c56caf,#b6c56caf,#b6c56caf);
 min-height:100vh;
 color:rgb(2, 1, 1);
 overflow-x:hidden;
@@ -79,10 +79,10 @@ flex:1;
 max-width:600px;
 display:flex;
 margin:0 20px;
-background:rgba(255,255,255,0.1);
+background:#91599c70;
 border-radius:50px;
 overflow:hidden;
-border:1px solid rgba(255,255,255,0.15);
+border:1px solid rgba(4, 7, 4, 0.991);
 }
 
 .search input{
@@ -91,18 +91,18 @@ padding:16px;
 background:transparent;
 border:none;
 outline:none;
-color:white;
+color:rgb(246, 243, 243);
 font-size:16px;
 }
 
 .search input::placeholder{
-color:#ddd;
+color:#0b0808;
 }
 
 .search button{
-padding:16px 25px;
+padding:25px 25px;
 border:none;
-background:linear-gradient(45deg,#22c55e,#16a34a);
+background:linear-gradient(45deg,#22c55e,#22c55e);
 color:white;
 font-weight:bold;
 cursor:pointer;
@@ -306,16 +306,37 @@ transform:scale(1.08);
 }
 
 /* FORM */
+.btns{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
 
+.btns button{
+padding:10px;
+border:none;
+border-radius:10px;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btns button:first-child{
+background:#28a745;
+}
+
+.btns button:last-child{
+background:#ff9800;
+}
 .form{
 max-width:450px;
 margin:50px auto;
 padding:35px;
-background:rgba(255,255,255,0.08);
+background:rgba(159, 119, 119, 0.831);
 backdrop-filter:blur(20px);
-border:1px solid rgba(255,255,255,0.12);
+border:1px solid rgba(22, 227, 43, 0.968);
 border-radius:30px;
-box-shadow:0 15px 35px rgba(0,0,0,0.4);
+box-shadow:0 15px 35px rgba(168, 144, 144, 0.845);
 }
 
 .form h2{
@@ -330,8 +351,8 @@ padding:15px;
 margin:10px 0;
 border:none;
 border-radius:16px;
-background:rgba(255,255,255,0.08);
-color:white;
+background:rgba(3, 5, 3, 0.927);
+color:rgb(172, 159, 159);
 font-size:16px;
 outline:none;
 }
@@ -345,7 +366,7 @@ font-size:18px;
 font-weight:bold;
 margin-top:15px;
 background:linear-gradient(45deg,#22c55e,#16a34a);
-color:white;
+color:rgb(234, 217, 217);
 cursor:pointer;
 transition:0.4s;
 }
@@ -492,7 +513,7 @@ color:white;
 
 }
 #productPage{
-background:#f4f0f0fd;
+background:#b06d9c77;
 min-height:100vh;
 }
 
@@ -518,7 +539,7 @@ font-size:24px;
 }
 
 #pPrice{
-color:rgb(243, 246, 243);
+color:rgb(31, 61, 229);
 }
 
 .qtyBox{
@@ -533,21 +554,29 @@ margin:20px 0;
 padding:10px 15px;
 font-size:18px;
 }
-
 .btns{
 display:flex;
 gap:10px;
-justify-content:center;
-margin-top:20px;
+margin-top:10px;
 }
 
 .btns button{
-padding:12px 20px;
+padding:10px;
 border:none;
-border-radius:12px;
-font-size:16px;
+border-radius:10px;
+color:white;
+font-weight:bold;
 cursor:pointer;
 }
+
+.btns button:first-child{
+background:#28a745;
+}
+
+.btns button:last-child{
+background:#ff9800;
+}
+
 #pImage{
 width:100%;
 max-height:400px;
@@ -603,7 +632,6 @@ transform:scale(1.05);
 
 </div>
 
-<div id="wallet">wallet 0</div>
 
 <!-- STORE -->
 
@@ -616,7 +644,7 @@ transform:scale(1.05);
 
 
 <div class="logo">
-    <img src="logo6.jpeg" style="height:200px;">
+    <img src="logo6.jpeg" style="height:100px;">
 </div>
 
 <div class="search">
@@ -1161,22 +1189,6 @@ alert("❌ Payment Error")
 
 }
 
-async function loadWallet(){
-
-let myRef = localStorage.getItem("myRef")
-
-try{
-let res = await fetch(API + "/wallet/" + myRef)
-let data = await res.json()
-
-document.getElementById("wallet").innerText = data.balance || 0
-
-}catch(err){
-console.log("wallet error")
-}
-
-}
-
 /* TRACK */
 
 async function trackOrder(){
@@ -1259,6 +1271,30 @@ document.getElementById("productPage").style.display = "block";
 document.getElementById("pImage").src =
 selectedProduct.image;
 
+let pImage = document.getElementById("pImage");
+
+pImage.ontouchstart = function(e){
+    startX = e.touches[0].clientX;
+};
+
+pImage.ontouchend = function(e){
+
+let endX = e.changedTouches[0].clientX;
+
+if(startX - endX > 50){
+
+showImage(currentIndex + 1);
+
+}
+
+if(endX - startX > 50){
+
+showImage(currentIndex - 1);
+
+}
+
+};
+
 currentImages = [
 selectedProduct.image,
 selectedProduct.image2 || selectedProduct.image,
@@ -1281,16 +1317,16 @@ document.getElementById("thumb4").src =
 selectedProduct.image4 || selectedProduct.image;
 
 document.getElementById("thumb1").onclick =
-()=>changePhoto(selectedProduct.image);
+()=>showImage(0);
 
 document.getElementById("thumb2").onclick =
-()=>changePhoto(selectedProduct.image2 || selectedProduct.image);
+()=>showImage(1);
 
 document.getElementById("thumb3").onclick =
-()=>changePhoto(selectedProduct.image3 || selectedProduct.image);
+()=>showImage(2);
 
 document.getElementById("thumb4").onclick =
-()=>changePhoto(selectedProduct.image4 || selectedProduct.image);
+()=>showImage(3);
 
 document.getElementById("pName").innerText =
 selectedProduct.name;
@@ -1392,6 +1428,8 @@ alert("✅ Added To Cart");
 function changePhoto(src){
 
 document.getElementById("pImage").src = src;
+
+currentIndex = currentImages.indexOf(src);
 
 }
 
