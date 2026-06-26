@@ -60,9 +60,18 @@ def init_db():
     image TEXT,
     image2 TEXT,
     image3 TEXT,
-    image4 TEXT
+    image4 TEXT,
+    discount INTEGER DEFAULT 0
     )
     """)
+
+    try:
+        cursor.execute("""
+        ALTER TABLE products
+        ADD COLUMN discount INTEGER DEFAULT 0
+        """)
+    except:
+        pass
 
     # ORDERS
     cursor.execute("""
@@ -162,7 +171,7 @@ def get_products():
 
     for r in rows:
 
-        products.append({
+       products.append({
     "id": r[0],
     "name": r[1],
     "price": r[2],
@@ -170,7 +179,8 @@ def get_products():
     "image": r[4],
     "image2": r[5],
     "image3": r[6],
-    "image4": r[7]
+    "image4": r[7],
+    "discount": r[8]
 })
 
     conn.close()
@@ -219,6 +229,31 @@ def delete_product(id: int):
 
     return {
         "message": "Deleted"
+    }
+
+@app.post("/update-discount")
+def update_discount(data: dict):
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        UPDATE products
+        SET discount=?
+        WHERE id=?
+        """,
+        (
+            data.get("discount"),
+            data.get("id")
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "message": "Discount Updated Successfully"
     }
 
 # ---------------- CREATE PAYMENT ----------------
