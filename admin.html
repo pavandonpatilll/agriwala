@@ -204,6 +204,13 @@
             <input id="productPrice" placeholder="Price">
             <input id="productCategory" placeholder="Category">
             <textarea id="description" placeholder="Product Description"></textarea>
+            <input id="price100" placeholder="100 ml Price">
+
+            <input id="price250" placeholder="250 ml Price">
+
+            <input id="price500" placeholder="500 ml Price">
+
+            <input id="price1000" placeholder="1 L Price">
             <input type="file" id="imageFile">
             <input type="file" id="imageFile2">
 
@@ -325,16 +332,24 @@
             if (image === "") return
 
             let product = {
-                name: document.getElementById("productName").value,
-                price: document.getElementById("productPrice").value,
-                category: document.getElementById("productCategory").value,
-                description: document.getElementById("description").value,
-                image: image,
-                image2: image2,
-                image3: image3,
-                image4: image4
-            }
+    name: document.getElementById("productName").value,
 
+    price: document.getElementById("productPrice").value,
+
+    category: document.getElementById("productCategory").value,
+
+    description: document.getElementById("description").value,
+
+    price100: document.getElementById("price100").value,
+    price250: document.getElementById("price250").value,
+    price500: document.getElementById("price500").value,
+    price1000: document.getElementById("price1000").value,
+
+    image: image,
+    image2: image2,
+    image3: image3,
+    image4: image4
+}
 
             await fetch(API + "/add-product", {
                 method: "POST",
@@ -353,6 +368,11 @@
             document.getElementById("productPrice").value = ""
             document.getElementById("productCategory").value = ""
             document.getElementById("imageFile").value = ""
+
+            document.getElementById("price100").value = ""
+document.getElementById("price250").value = ""
+document.getElementById("price500").value = ""
+document.getElementById("price1000").value = ""
 
             loadProducts()
         }

@@ -651,6 +651,21 @@ z-index:10;
 box-shadow:0 4px 10px rgba(0,0,0,0.3);
 }
 
+.variantBtn{
+padding:10px 18px;
+margin:5px;
+border:2px solid #28a745;
+background:white;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.variantBtn:hover{
+background:#28a745;
+color:white;
+}
+
 </style>
 </head>
 
@@ -803,6 +818,7 @@ text-align:center;
     let startX = 0;
 let currentImages = [];
 let currentIndex = 0;
+let selectedVariant = "100";
 
 async function loadMyReferrals(){
 
@@ -1060,7 +1076,11 @@ discount > 0
 ? `<div class="discountSticker">${discount}% OFF</div>`
 : "";
 
+selectedVariant = "100";
+updatePrice();
+
 }
+
 
 
 /* START STORE */
@@ -1614,22 +1634,51 @@ updatePrice();
 }
 
 }
-
 function updatePrice(){
 
-let price = selectedProduct.price;
+let price = selectedProduct.price100;
+
+if(selectedVariant == "250"){
+    price = selectedProduct.price250;
+}
+
+if(selectedVariant == "500"){
+    price = selectedProduct.price500;
+}
+
+if(selectedVariant == "1000"){
+    price = selectedProduct.price1000;
+}
+
+// agar koi price empty ho to default price
+if(!price){
+    price = selectedProduct.price;
+}
+
+price = Number(price);
 
 if(selectedProduct.discount > 0){
 
 price = Math.round(
-selectedProduct.price -
-(selectedProduct.price * selectedProduct.discount / 100)
+price - (price * selectedProduct.discount / 100)
 );
 
 }
 
+document.getElementById("pPrice").innerHTML = `
+<h2 style="color:red;">₹${price}</h2>
+`;
+
 document.getElementById("finalPrice").innerText =
 "Total : ₹" + (price * qty);
+
+}
+
+function changeVariant(size){
+
+selectedVariant = size;
+
+updatePrice();
 
 }
 
@@ -1704,6 +1753,7 @@ currentImages[currentIndex];
 
 }
 
+
 </script>
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 <div id="productPage" style="display:none; padding:20px;">
@@ -1735,6 +1785,19 @@ currentImages[currentIndex];
 
 <div id="pPrice"></div>
 
+<div id="variantBox" style="margin:20px 0;">
+
+<h3>Select Size</h3>
+
+<button class="variantBtn" onclick="changeVariant('100')">100 ml</button>
+
+<button class="variantBtn" onclick="changeVariant('250')">250 ml</button>
+
+<button class="variantBtn" onclick="changeVariant('500')">500 ml</button>
+
+<button class="variantBtn" onclick="changeVariant('1000')">1 L</button>
+
+</div>
 
 
 <div class="qtyBox">

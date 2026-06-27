@@ -62,6 +62,12 @@ CREATE TABLE IF NOT EXISTS products(
     image2 TEXT,
     image3 TEXT,
     image4 TEXT,
+                   
+    price100 INTEGER,
+    price250 INTEGER,
+    price500 INTEGER,
+    price1000 INTEGER,   
+                              
     discount INTEGER DEFAULT 0
 )
 """)
@@ -70,6 +76,38 @@ CREATE TABLE IF NOT EXISTS products(
         cursor.execute("""
         ALTER TABLE products
         ADD COLUMN discount INTEGER DEFAULT 0
+        """)
+    except:
+        pass
+
+    try:
+        cursor.execute("""
+        ALTER TABLE products
+        ADD COLUMN price100 INTEGER
+        """)
+    except:
+        pass
+
+    try:
+        cursor.execute("""
+        ALTER TABLE products
+        ADD COLUMN price250 INTEGER
+        """)
+    except:
+        pass
+
+    try:
+        cursor.execute("""
+        ALTER TABLE products
+        ADD COLUMN price500 INTEGER
+        """)
+    except:
+        pass
+
+    try:
+        cursor.execute("""
+        ALTER TABLE products
+        ADD COLUMN price1000 INTEGER
         """)
     except:
         pass
@@ -182,7 +220,11 @@ def get_products():
     "image2": r[6],
     "image3": r[7],
     "image4": r[8],
-    "discount": r[9]
+    "price100": r[9],
+    "price250": r[10],
+    "price500": r[11],
+    "price1000": r[12],
+    "discount": r[13]
 })
 
     conn.close()
@@ -196,16 +238,21 @@ def add_product(data: dict):
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO products (name,price,category,description,image,image2,image3,image4) VALUES (?,?,?,?,?,?,?,?)",
+        "INSERT INTO products (name,price,category,description,image,image2,image3,image4,price100,price250,price500,price1000) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
         (
-            data.get("name"),
-            data.get("price"),
-            data.get("category"),
-            data.get("description"),
-            data.get("image"),
-            data.get("image2"),
-            data.get("image3"),
-            data.get("image4")
+         data.get("name"),
+        data.get("price"),
+        data.get("category"),
+        data.get("description"),
+        data.get("image"),
+        data.get("image2"),
+        data.get("image3"),
+        data.get("image4"),
+        data.get("price100"),
+        data.get("price250"),
+        data.get("price500"),
+        data.get("price1000")
+
         )
     )
 
