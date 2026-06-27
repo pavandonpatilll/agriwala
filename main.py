@@ -112,6 +112,17 @@ CREATE TABLE IF NOT EXISTS products(
     except:
         pass
 
+            #Banner
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS banners(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        image TEXT,
+        product_id INTEGER
+    )
+    """)
+
     # ORDERS
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS orders(
@@ -139,7 +150,6 @@ CREATE TABLE IF NOT EXISTS products(
                  """)
 
     # REFERRALS
-    
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS referrals(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -946,3 +956,53 @@ def test():
     conn.close()
 
     return rows
+
+@app.post("/add-banner")
+def add_banner(data: dict):
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO banners(title,image,product_id)
+        VALUES(?,?,?)
+    """, (
+        data.get("title"),
+        data.get("image"),
+        data.get("product_id")
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "message": "Banner Added"
+    }
+
+@app.get("/banners")
+def get_banners():
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT * FROM banners
+        ORDER BY id DESC
+    """)
+
+    rows = cursor.fetchall()
+
+    banners = []
+
+    for r in rows:
+
+        banners.append({
+            "id": r[0],
+            "title": r[1],
+            "image": r[2],
+            "product_id": r[3]
+        })
+
+    conn.close()
+
+    return banners

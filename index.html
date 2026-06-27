@@ -665,6 +665,33 @@ font-weight:bold;
 background:#28a745;
 color:white;
 }
+.bannerSlider{
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    border-radius: 15px;
+}
+
+.bannerSlide{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: 0.6s ease-in-out;
+}
+
+.bannerSlide.active{
+    opacity: 1;
+}
+
+.bannerSlide img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+}
 
 </style>
 </head>
@@ -728,6 +755,9 @@ Logout
 </div>
 
 </div>
+
+<!-- 🔥 BANNER SLIDER -->
+<div class="bannerSlider" id="bannerSlider"></div>
 
 <div class="hero">
 <h1>🌾 Welcome To KrushiCom</h1>
@@ -1392,6 +1422,7 @@ alert("❌ Error tracking")
 /* AUTO LOAD */
 window.onload = function () {
 
+    loadBanners();
     loadWallet();
     loadReward();
     loadMyReferrals();
@@ -1753,6 +1784,76 @@ currentImages[currentIndex];
 
 }
 
+let banners = [];
+let bannerIndex = 0;
+
+async function loadBanners(){
+
+    let res = await fetch(API + "/banners");
+    banners = await res.json();
+
+    if(banners.length === 0) return;
+
+    renderBanners();
+
+    setInterval(()=>{
+        nextBanner();
+    }, 3000);
+
+    enableSwipe();
+}
+
+function renderBanners(){
+
+    let html = "";
+
+    banners.forEach((b, i)=>{
+        html += `
+        <div class="bannerSlide ${i === bannerIndex ? 'active' : ''}"
+             onclick="openBannerProduct(${b.product_id})">
+            <img src="${b.image}">
+        </div>
+        `;
+    });
+
+    document.getElementById("bannerSlider").innerHTML = html;
+}
+
+function nextBanner(){
+    bannerIndex = (bannerIndex + 1) % banners.length;
+    renderBanners();
+}
+
+function prevBanner(){
+    bannerIndex = (bannerIndex - 1 + banners.length) % banners.length;
+    renderBanners();
+}
+
+function openBannerProduct(id){
+    window.location.href = "?id=" + id;
+}
+
+/* 👉 SWIPE SUPPORT (MOBILE) */
+function enableSwipe(){
+
+    let slider = document.getElementById("bannerSlider");
+
+    slider.addEventListener("touchstart", (e)=>{
+        startX = e.touches[0].clientX;
+    });
+
+    slider.addEventListener("touchend", (e)=>{
+        let endX = e.changedTouches[0].clientX;
+
+        if(startX - endX > 50){
+            nextBanner(); // swipe left
+        }
+
+        if(endX - startX > 50){
+            prevBanner(); // swipe right
+        }
+    });
+}
 
 </script>
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>

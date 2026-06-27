@@ -226,6 +226,24 @@
         </div>
 
         <div class="box">
+
+<h3>🎯 Add Home Banner</h3>
+
+<input id="bannerTitle" placeholder="Banner Title">
+
+<select id="bannerProduct">
+<option value="">Select Product</option>
+</select>
+
+<input type="file" id="bannerImage">
+
+<button onclick="addBanner()">
+Add Banner
+</button>
+
+</div>
+
+        <div class="box">
             <h3>Orders</h3>
             <div id="orders">⏳ Loading...</div>
         </div>
@@ -319,6 +337,43 @@
 
         }
 
+        async function addBanner(){
+
+let image = await uploadImageById("bannerImage");
+
+if(image==""){
+alert("Select Banner Image");
+return;
+}
+
+await fetch(API+"/add-banner",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+title:document.getElementById("bannerTitle").value,
+
+image:image,
+
+product_id:document.getElementById("bannerProduct").value
+
+})
+
+});
+
+alert("✅ Banner Added");
+
+document.getElementById("bannerTitle").value="";
+document.getElementById("bannerProduct").value="";
+document.getElementById("bannerImage").value="";
+
+}
+
         /* ADD PRODUCT */
         async function addProduct() {
 
@@ -378,25 +433,37 @@ document.getElementById("price1000").value = ""
         }
 
         /* PRODUCTS */
-        async function loadProducts() {
+       async function loadProducts() {
 
-            products.innerHTML = "⏳ Loading..."
+    products.innerHTML = "⏳ Loading..."
 
-            let res = await fetch(API + "/products")
-            let data = await res.json()
+    let res = await fetch(API + "/products")
+    let data = await res.json()
 
-            pCount.innerText = data.length
+    pCount.innerText = data.length
 
-            let html = ""
+    let html = ""
 
-            data.forEach(p => {
-                html += `
+    // 🔥 Banner Product Dropdown
+    let options = '<option value="">Select Product</option>';
+
+    data.forEach(p => {
+
+        // Dropdown Option
+        options += `
+<option value="${p.id}">
+${p.name}
+</option>`;
+
+        // Product Cards
+        html += `
 <div class="card">
 
 <p><b>ID: ${p.id}</b></p>
 
 <img src="${p.image}">
 <h4>${p.name}</h4>
+
 <p>₹${p.price}</p>
 
 <div style="display:flex;gap:8px;justify-content:center;">
@@ -411,13 +478,16 @@ Delete
 
 </div>
 
-</div>`
+</div>
+`;
+    });
 
-            })
+    // Product List
+    products.innerHTML = html;
 
-            products.innerHTML = html
-        }
-
+    // Banner Dropdown
+    document.getElementById("bannerProduct").innerHTML = options;
+}
 
         /* DELETE */
         async function deleteProduct(id) {
