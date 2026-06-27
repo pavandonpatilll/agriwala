@@ -178,11 +178,11 @@ def get_products():
     "price": r[2],
     "category": r[3],
     "description": r[4], 
-    "image": r[4],
-    "image2": r[5],
-    "image3": r[6],
-    "image4": r[7],
-    "discount": r[8]
+    "image": r[5],
+    "image2": r[6],
+    "image3": r[7],
+    "image4": r[8],
+    "discount": r[9]
 })
 
     conn.close()
@@ -196,7 +196,7 @@ def add_product(data: dict):
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO products (name,price,category,description,image,image2,image3,image4) VALUES (?,?,?,?,?,?,?)",
+        "INSERT INTO products (name,price,category,description,image,image2,image3,image4) VALUES (?,?,?,?,?,?,?,?)",
         (
             data.get("name"),
             data.get("price"),
