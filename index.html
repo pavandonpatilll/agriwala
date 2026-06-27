@@ -276,7 +276,7 @@ margin:6px 0;
 .price{
 font-size:46px;
 font-weight:800;
-color:#4ade80;
+color:#bade1a;
 margin:14px 0;
 }
 
@@ -415,7 +415,7 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(15,23,42,0.95);
+background:rgba(119, 221, 78, 0.95);
 backdrop-filter:blur(20px);
 z-index:9999;
 padding:30px;
@@ -539,7 +539,7 @@ font-size:24px;
 }
 
 #pPrice{
-color:rgb(31, 61, 229);
+color:rgb(34, 158, 203);
 }
 
 .qtyBox{
@@ -630,75 +630,25 @@ border-color:#28a745;
 transform:scale(1.05);
 }
 
-.card{
+.imageBox{
 position:relative;
+width:100%;
+max-width:400px;
+margin:auto;
 }
 
 .discountSticker{
 position:absolute;
 top:10px;
 left:10px;
-background:#ff3b30;
-color:#fff;
-padding:5px 10px;
-border-radius:8px;
+background:linear-gradient(45deg,#ff3b30,#ff9500);
+color:white;
+padding:6px 10px;
+border-radius:10px;
 font-size:13px;
 font-weight:bold;
 z-index:10;
-}
-
-.productSticker{
-
-display:inline-block;
-
-background:#ff3b30;
-
-color:white;
-
-padding:6px 14px;
-
-border-radius:8px;
-
-font-size:16px;
-
-font-weight:bold;
-
-margin-bottom:12px;
-
-}
-
-.imageBox{
-
-position:relative;
-
-width:100%;
-
-}
-
-#productDiscount{
-
-position:absolute;
-
-top:10px;
-
-left:10px;
-
-z-index:100;
-
-}
-
-.productSticker{
-
-background:#ff3b30;
-
-color:white;
-
-padding:6px 12px;
-
-border-radius:8px;
-
-font-weight:bold;
-
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
 }
 
 </style>
@@ -975,21 +925,38 @@ let html=""
 
 list.forEach((p,i)=>{
 
-    html += `
-<div class="card" onclick="openProduct(${i})">
+const discount = Number(p.discount || 0);
+
+const finalPrice = discount > 0
+  ? Math.round(p.price - (p.price * discount / 100))
+  : p.price;
+
+html += `
+
+<div class="card" onclick="openProductById(${p.id})">
+
+${discount > 0 ? `<div class="discountSticker">${discount}% OFF</div>` : ""}
+
 <img src="${p.image}">
 <h3>${p.name}</h3>
-<p>${p.category}</p>
-${p.discount > 0 ? `
-<div class="discountSticker">${p.discount}% OFF</div>
+
+<p style="font-size:14px;font-weight:bold;color:#28a745;">
+${p.category}
+</p>
+
+<p style="font-size:13px;color:#777;">
+${p.description ? p.description.substring(0,60) + "..." : ""}
+</p>
 
 <p class="price">
+
 <span style="color:red;font-size:22px;font-weight:bold;">
-₹${Math.round(p.price - (p.price * p.discount / 100))}
+₹${finalPrice}
 </span>
 
 <br>
 
+${discount > 0 ? `
 <span style="text-decoration:line-through;color:gray;">
 ₹${p.price}
 </span>
@@ -997,17 +964,17 @@ ${p.discount > 0 ? `
 <br>
 
 <span style="color:green;font-size:14px;">
-You Save ₹${Math.round(p.price * p.discount / 100)}
+You Save ₹${p.price - finalPrice}
 </span>
+` : ""}
 
 </p>
-` : `
-<p class="price">₹${p.price}</p>
-`}
+
 <button onclick="event.stopPropagation(); addCart(${i})">Add to Cart</button>
-<button onclick="event.stopPropagation(); buyNow(${i})" style="background:#008000;color:black;">
+<button onclick="event.stopPropagation(); buyNow(${i})" style="background:#008000;color:white;">
 Buy Now
 </button>
+
 </div>
 `
 })
@@ -1015,6 +982,87 @@ Buy Now
 document.getElementById("products").innerHTML=html
 
 }
+
+function openProductById(id){
+
+selectedProduct = products.find(p => p.id == id);
+
+console.log(selectedProduct);
+
+if(!selectedProduct){
+alert("Product not found");
+return;
+}
+
+document.getElementById("store").style.display = "none";
+document.getElementById("productPage").style.display = "block";
+
+/* IMAGE FIX */
+document.getElementById("pImage").src = selectedProduct.image;
+
+// ===== Product Images =====
+let images = [
+selectedProduct.image,
+selectedProduct.image2 || selectedProduct.image,
+selectedProduct.image3 || selectedProduct.image,
+selectedProduct.image4 || selectedProduct.image
+];
+
+// Main Image
+document.getElementById("pImage").src = images[0];
+
+// Save Images
+currentImages = images;
+currentIndex = 0;
+
+// Thumbnails
+document.getElementById("thumb1").src = images[0];
+document.getElementById("thumb2").src = images[1];
+document.getElementById("thumb3").src = images[2];
+document.getElementById("thumb4").src = images[3];
+
+// Thumbnail Click
+document.getElementById("thumb1").onclick = () => showImage(0);
+document.getElementById("thumb2").onclick = () => showImage(1);
+document.getElementById("thumb3").onclick = () => showImage(2);
+document.getElementById("thumb4").onclick = () => showImage(3);
+
+/* NAME */
+document.getElementById("pName").innerText = selectedProduct.name;
+
+/* CATEGORY / DESCRIPTION */
+document.getElementById("pDesc").innerText =
+selectedProduct.description || selectedProduct.category;
+
+/* PRICE FIX */
+let discount = Number(selectedProduct.discount || 0);
+
+let finalPrice = discount > 0
+  ? Math.round(selectedProduct.price - (selectedProduct.price * discount / 100))
+  : selectedProduct.price;
+
+document.getElementById("pPrice").innerHTML = `
+<h2 style="color:red;">₹${finalPrice}</h2>
+
+${discount > 0 ? `
+<p style="text-decoration:line-through;color:gray;">
+₹${selectedProduct.price}
+</p>
+
+<p style="color:green;font-weight:bold;">
+${discount}% OFF
+</p>
+` : ""}
+`;
+
+/* DISCOUNT STICKER FIX */
+document.getElementById("productDiscount").innerHTML =
+discount > 0
+? `<div class="discountSticker">${discount}% OFF</div>`
+: "";
+
+}
+
 
 /* START STORE */
 
@@ -1323,30 +1371,44 @@ alert("❌ Error tracking")
 }
 
 /* AUTO LOAD */
+window.onload = function () {
 
-window.onload=function(){
-    loadWallet()
-    loadReward()
-    loadMyReferrals()
+    loadWallet();
+    loadReward();
+    loadMyReferrals();
 
-document.getElementById("myRefCode").innerText = localStorage.getItem("myRef")
+    document.getElementById("myRefCode").innerText =
+        localStorage.getItem("myRef") || "";
 
-// 🔥 wake up server
-fetch(API+"/products")
+    // wake up server
+    fetch(API + "/products");
 
-let user=localStorage.getItem("kisanUser")
+    let user = localStorage.getItem("kisanUser");
 
-if(user){
+    if (user && user !== "null") {
 
-farmer=JSON.parse(user)
+        try {
+            farmer = JSON.parse(user);
 
-document.getElementById("form").style.display="none"
-document.getElementById("store").style.display="block"
+            document.getElementById("form").style.display = "none";
+            document.getElementById("store").style.display = "block";
 
-loadProducts()
+            loadProducts();
 
-}
+        } catch (e) {
+            console.log("User parse error");
 
+            localStorage.removeItem("kisanUser");
+
+            document.getElementById("form").style.display = "block";
+            document.getElementById("store").style.display = "none";
+        }
+
+    } else {
+
+        document.getElementById("form").style.display = "block";
+        document.getElementById("store").style.display = "none";
+    }
 }
 
 async function loadReward(){
@@ -1449,15 +1511,16 @@ selectedProduct.name;
 
 let finalPrice = selectedProduct.price;
 
-if(selectedProduct.discount > 0){
+if(Number(selectedProduct.discount || 0) > 0){
 
 finalPrice = Math.round(
 selectedProduct.price -
 (selectedProduct.price * selectedProduct.discount / 100)
 );
 
+
 document.getElementById("productDiscount").innerHTML =
-`<div class="productSticker">${selectedProduct.discount}% OFF</div>`;
+`${selectedProduct.discount}% OFF`;
 
 document.getElementById("pPrice").innerHTML = `
 
@@ -1490,7 +1553,7 @@ document.getElementById("pPrice").innerHTML = `
 }
 
 document.getElementById("pDesc").innerText =
-selectedProduct.category;
+selectedProduct.description || "No details available";
 
 qty = 1;
 
@@ -1652,9 +1715,10 @@ currentImages[currentIndex];
 
 <div class="productDetails">
 
-
-<img id="pImage">
-
+<div class="imageBox">
+    <img id="pImage">
+    <div id="productDiscount" class="discountSticker"></div>
+</div>
 
 <div class="thumbs">
 
@@ -1671,6 +1735,8 @@ currentImages[currentIndex];
 <h2 id="pName"></h2>
 
 <div id="pPrice"></div>
+
+
 
 <div class="qtyBox">
 

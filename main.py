@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS products(
     name TEXT,
     price INTEGER,
     category TEXT,
+    description TEXT,
     image TEXT,
     image2 TEXT,
     image3 TEXT,
@@ -176,6 +177,7 @@ def get_products():
     "name": r[1],
     "price": r[2],
     "category": r[3],
+    "description": r[4], 
     "image": r[4],
     "image2": r[5],
     "image3": r[6],
@@ -194,11 +196,12 @@ def add_product(data: dict):
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO products (name,price,category,image,image2,image3,image4) VALUES (?,?,?,?,?,?,?)",
+        "INSERT INTO products (name,price,category,description,image,image2,image3,image4) VALUES (?,?,?,?,?,?,?)",
         (
             data.get("name"),
             data.get("price"),
             data.get("category"),
+            data.get("description"),
             data.get("image"),
             data.get("image2"),
             data.get("image3"),
