@@ -590,11 +590,11 @@ cursor:pointer;
 
 }
 .btns button:first-child{
-background:#28a745;
+background:#63bd78;
 }
 
 .btns button:last-child{
-background:#ff9800;
+background:#cb9646;
 }
 
 #pImage{
@@ -665,32 +665,39 @@ font-weight:bold;
 background:#28a745;
 color:white;
 }
-.bannerSlider{
+
+.relatedCard{
+    background: white;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    width: 180px;
+    flex-shrink: 0;
     position: relative;
-    width: 100%;
-    height: 220px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    border-radius: 15px;
 }
 
-.bannerSlide{
-    position: absolute;
+.relatedCard img{
     width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: 0.6s ease-in-out;
+    height: 120px;
+    object-fit: contain;
 }
 
-.bannerSlide.active{
-    opacity: 1;
+.relatedRow{
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px 0;
 }
 
-.bannerSlide img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 15px;
+#productPage .btns button:first-child{
+    background: linear-gradient(45deg,#22c55e,#16a34a);
+    color: white;
+}
+
+#productPage .btns button:last-child{
+    background: linear-gradient(45deg,#f59e0b,#f97316);
+    color: white;
 }
 
 </style>
@@ -757,7 +764,7 @@ Logout
 </div>
 
 <!-- 🔥 BANNER SLIDER -->
-<div class="bannerSlider" id="bannerSlider"></div>
+ 
 
 <div class="hero">
 <h1>🌾 Welcome To KrushiCom</h1>
@@ -845,6 +852,27 @@ text-align:center;
 
 <script>
 
+    function getPrice(p){
+    let price = Number(p.price || 0);
+    let discount = Number(p.discount || 0);
+    
+
+    let final = price;
+
+    if(discount > 0){
+        final = Math.round(price - (price * discount / 100));
+    }
+
+    return {
+        price,
+        final,
+        save: price - final,
+        discount
+    };
+}
+
+    let banners = [];
+     let bannerIndex = 0;
     let startX = 0;
 let currentImages = [];
 let currentIndex = 0;
@@ -925,6 +953,7 @@ if(!localStorage.getItem("myRef")){
 let farmer={}
 let cart=[]
 let products=[]
+let variantPrice = 0;
 
 const API="https://agriwala.onrender.com";
 
@@ -1031,6 +1060,11 @@ document.getElementById("products").innerHTML=html
 
 function openProductById(id){
 
+    window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+});
+
 selectedProduct = products.find(p => p.id == id);
 
 
@@ -1041,6 +1075,8 @@ return;
 
 document.getElementById("store").style.display = "none";
 document.getElementById("productPage").style.display = "block";
+
+document.getElementById("productPage").scrollTop = 0;
 
 /* IMAGE FIX */
 document.getElementById("pImage").src = selectedProduct.image;
@@ -1107,9 +1143,15 @@ discount > 0
 : "";
 
 selectedVariant = "100";
+
+// ✅ ADMIN VARIANT PRICE DEFAULT SET
+variantPrice = Number(selectedProduct.price100 || selectedProduct.price);
+
 updatePrice();
+loadRelatedProducts();
 
 }
+
 
 
 
@@ -1422,8 +1464,8 @@ alert("❌ Error tracking")
 /* AUTO LOAD */
 window.onload = function () {
 
-    loadBanners();
-    loadWallet();
+    // loadBanners();
+    // loadWallet();
     loadReward();
     loadMyReferrals();
 
@@ -1559,7 +1601,11 @@ document.getElementById("thumb4").onclick =
 document.getElementById("pName").innerText =
 selectedProduct.name;
 
-let finalPrice = selectedProduct.price;
+let discount = Number(selectedProduct.discount || 0);
+
+let finalPrice = discount > 0
+  ? Math.round(selectedProduct.price - (selectedProduct.price * discount / 100))
+  : selectedProduct.price;
 
 if(Number(selectedProduct.discount || 0) > 0){
 
@@ -1627,7 +1673,7 @@ cart = [{
 
 name: selectedProduct.name,
 
-price: selectedProduct.price,
+price: Number(document.getElementById("finalPrice").innerText.replace("Total : ₹","")),
 
 image: selectedProduct.image,
 
@@ -1665,52 +1711,41 @@ updatePrice();
 }
 
 }
+
 function updatePrice(){
+    let price = variantPrice;
 
-let price = selectedProduct.price100;
+    if(!price) price = selectedProduct.price;
 
-if(selectedVariant == "250"){
-    price = selectedProduct.price250;
-}
-
-if(selectedVariant == "500"){
-    price = selectedProduct.price500;
-}
-
-if(selectedVariant == "1000"){
-    price = selectedProduct.price1000;
-}
-
-// agar koi price empty ho to default price
-if(!price){
-    price = selectedProduct.price;
-}
-
-price = Number(price);
-
-if(selectedProduct.discount > 0){
-
-price = Math.round(
-price - (price * selectedProduct.discount / 100)
-);
-
-}
-
-document.getElementById("pPrice").innerHTML = `
-<h2 style="color:red;">₹${price}</h2>
-`;
-
-document.getElementById("finalPrice").innerText =
-"Total : ₹" + (price * qty);
-
+    document.getElementById("finalPrice").innerText =
+    "Total : ₹" + (price * qty);
 }
 
 function changeVariant(size){
 
 selectedVariant = size;
 
-updatePrice();
+// direct admin price lo (NO multiplier)
+let price = 0;
 
+if(size == "100") price = selectedProduct.price100;
+else if(size == "250") price = selectedProduct.price250;
+else if(size == "500") price = selectedProduct.price500;
+else if(size == "1000") price = selectedProduct.price1000;
+
+// fallback
+if(!price) price = selectedProduct.price;
+
+// discount apply
+let discount = Number(selectedProduct.discount || 0);
+
+if(discount > 0){
+    price = Math.round(price - (price * discount / 100));
+}
+
+variantPrice = price;
+
+updatePrice();
 }
 
 function addSelectedToCart(){
@@ -1719,7 +1754,7 @@ cart.push({
 
 name:selectedProduct.name,
 
-price:selectedProduct.price,
+price: Number(document.getElementById("finalPrice").innerText.replace("Total : ₹","")),
 
 image:selectedProduct.image,
 
@@ -1735,124 +1770,170 @@ alert("✅ Added To Cart");
 
 function changePhoto(src){
 
-document.getElementById("pImage").src = src;
-
-currentIndex = currentImages.indexOf(src);
+    document.getElementById("pImage").src = src;
+    currentIndex = currentImages.indexOf(src);
 
 }
 
 const pImage = document.getElementById("pImage");
 
-pImage.addEventListener("touchstart",(e)=>{
+if (pImage) {
 
-startX = e.touches[0].clientX;
-
-});
-
-pImage.addEventListener("touchend",(e)=>{
-
-let endX = e.changedTouches[0].clientX;
-
-if(startX - endX > 50){
-
-showImage(currentIndex + 1);
-
-}
-
-if(endX - startX > 50){
-
-showImage(currentIndex - 1);
-
-}
-
-});
-
-function showImage(index){
-
-if(index < 0){
-index = currentImages.length - 1;
-}
-
-if(index >= currentImages.length){
-index = 0;
-}
-
-currentIndex = index;
-
-document.getElementById("pImage").src =
-currentImages[currentIndex];
-
-}
-
-let banners = [];
-let bannerIndex = 0;
-
-async function loadBanners(){
-
-    let res = await fetch(API + "/banners");
-    banners = await res.json();
-
-    if(banners.length === 0) return;
-
-    renderBanners();
-
-    setInterval(()=>{
-        nextBanner();
-    }, 3000);
-
-    enableSwipe();
-}
-
-function renderBanners(){
-
-    let html = "";
-
-    banners.forEach((b, i)=>{
-        html += `
-        <div class="bannerSlide ${i === bannerIndex ? 'active' : ''}"
-             onclick="openBannerProduct(${b.product_id})">
-            <img src="${b.image}">
-        </div>
-        `;
-    });
-
-    document.getElementById("bannerSlider").innerHTML = html;
-}
-
-function nextBanner(){
-    bannerIndex = (bannerIndex + 1) % banners.length;
-    renderBanners();
-}
-
-function prevBanner(){
-    bannerIndex = (bannerIndex - 1 + banners.length) % banners.length;
-    renderBanners();
-}
-
-function openBannerProduct(id){
-    window.location.href = "?id=" + id;
-}
-
-/* 👉 SWIPE SUPPORT (MOBILE) */
-function enableSwipe(){
-
-    let slider = document.getElementById("bannerSlider");
-
-    slider.addEventListener("touchstart", (e)=>{
+    pImage.addEventListener("touchstart",(e)=>{
         startX = e.touches[0].clientX;
     });
 
-    slider.addEventListener("touchend", (e)=>{
+    pImage.addEventListener("touchend",(e)=>{
+
         let endX = e.changedTouches[0].clientX;
 
         if(startX - endX > 50){
-            nextBanner(); // swipe left
+            showImage(currentIndex + 1);
         }
 
         if(endX - startX > 50){
-            prevBanner(); // swipe right
+            showImage(currentIndex - 1);
         }
+
     });
+
+}
+
+function showImage(index){
+
+    if(index < 0){
+        index = currentImages.length - 1;
+    }
+
+    if(index >= currentImages.length){
+        index = 0;
+    }
+
+    currentIndex = index;
+
+    document.getElementById("pImage").src = currentImages[currentIndex];
+
+}
+
+
+function loadRelatedProducts(){
+
+if(!selectedProduct) return;
+
+let list = products.filter(p =>
+    p.category === selectedProduct.category &&
+    p.id !== selectedProduct.id
+);
+
+// if no related products
+if(list.length === 0){
+    document.getElementById("relatedProducts").innerHTML =
+    "<p style='text-align:center;color:gray;'>No related products</p>";
+    return;
+}
+
+let html = "";
+
+list.forEach(p => {
+
+let discount = Number(p.discount || 0);
+
+let finalPrice = discount > 0
+  ? Math.round(p.price - (p.price * discount / 100))
+  : p.price;
+
+html += `
+<div class="relatedCard" onclick="openProductById(${p.id})">
+
+    ${discount > 0 ? `<div class="discountSticker">${discount}% OFF</div>` : ""}
+
+    <img src="${p.image}">
+
+    <h4>${p.name}</h4>
+
+    <p style="color:green;font-weight:bold;font-size:16px;">
+        ₹${finalPrice}
+    </p>
+
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+
+        <button onclick="event.stopPropagation(); addCartFromRelated(${p.id})"
+        style="background:#22c55e;color:white;padding:6px 10px;border:none;border-radius:6px;">
+        Add
+        </button>
+
+        <button onclick="event.stopPropagation(); buyFromRelated(${p.id})"
+        style="background:#ff9800;color:white;padding:6px 10px;border:none;border-radius:6px;">
+        Buy
+        </button>
+
+    </div>
+
+</div>
+`;
+});
+
+document.getElementById("relatedProducts").innerHTML = html;
+}
+
+function addCartFromRelated(id){
+
+let p = products.find(x => x.id === id);
+
+cart.push({
+name: p.name,
+price: p.price,
+image: p.image,
+qty: 1
+});
+
+updateCartCount();
+alert("Added");
+}
+
+function buyFromRelated(id){
+
+let p = products.find(x => x.id === id);
+
+cart = [{
+name: p.name,
+price: p.price,
+image: p.image,
+qty: 1
+}];
+
+updateCartCount();
+checkout();
+}
+
+function addCartById(id){
+
+let product = products.find(p => p.id == id);
+
+cart.push({
+name: product.name,
+price: product.price,
+image: product.image,
+qty:1
+});
+
+updateCartCount();
+alert("Added!");
+}
+
+function buyNowById(id){
+
+let product = products.find(p => p.id == id);
+
+cart = [{
+name: product.name,
+price: product.price,
+image: product.image,
+qty:1
+}];
+
+updateCartCount();
+checkout();
 }
 
 </script>
@@ -1919,6 +2000,9 @@ function enableSwipe(){
 
 <div class="btns">
 
+    
+</div>
+
 <button onclick="addSelectedToCart()">
 🛒 Add To Cart
 </button>
@@ -1926,6 +2010,10 @@ function enableSwipe(){
 <button onclick="buySelectedProduct()">
 ⚡ Buy Now
 </button>
+
+<div style="margin-top:30px;">
+    <h3>🔥 Related Products</h3>
+    <div id="relatedProducts" class="relatedRow"></div>
 
 </div>
 

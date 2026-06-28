@@ -226,24 +226,6 @@
         </div>
 
         <div class="box">
-
-<h3>🎯 Add Home Banner</h3>
-
-<input id="bannerTitle" placeholder="Banner Title">
-
-<select id="bannerProduct">
-<option value="">Select Product</option>
-</select>
-
-<input type="file" id="bannerImage">
-
-<button onclick="addBanner()">
-Add Banner
-</button>
-
-</div>
-
-        <div class="box">
             <h3>Orders</h3>
             <div id="orders">⏳ Loading...</div>
         </div>
@@ -336,43 +318,6 @@ Add Banner
             return data.image
 
         }
-
-        async function addBanner(){
-
-let image = await uploadImageById("bannerImage");
-
-if(image==""){
-alert("Select Banner Image");
-return;
-}
-
-await fetch(API+"/add-banner",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-title:document.getElementById("bannerTitle").value,
-
-image:image,
-
-product_id:document.getElementById("bannerProduct").value
-
-})
-
-});
-
-alert("✅ Banner Added");
-
-document.getElementById("bannerTitle").value="";
-document.getElementById("bannerProduct").value="";
-document.getElementById("bannerImage").value="";
-
-}
 
         /* ADD PRODUCT */
         async function addProduct() {
