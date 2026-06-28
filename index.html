@@ -2107,17 +2107,68 @@ alert("Added");
 
 function buyFromRelated(id){
 
-let p = products.find(x => x.id === id);
+let product = products.find(p => p.id == id);
 
+if(!product){
+alert("Product not found");
+return;
+}
+
+// discount price calculate
+let discount = Number(product.discount || 0);
+
+let finalPrice =
+discount > 0
+? Math.round(product.price - (product.price * discount / 100))
+: product.price;
+
+// COD = FREE ORDER
+if(product.cod === true){
+
+let order = {
+farmer: farmer,
+items: [{
+name: product.name,
+price: finalPrice,
+image: product.image,
+qty: 1,
+cod: true
+}],
+total: finalPrice,
+payment_id: "COD",
+payment_status: "COD",
+referral: farmer.referredBy || localStorage.getItem("usedRef"),
+myRef: localStorage.getItem("myRef"),
+discount: discount
+};
+
+fetch(API + "/order",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body: JSON.stringify(order)
+});
+
+alert("🎉 COD Order Placed Successfully");
+
+cart = [];
+updateCartCount();
+closeCart();
+
+return;
+}
+
+// ❌ NOT COD → PAID ORDER
 cart = [{
-name: p.name,
-price: p.price,
-image: p.image,
-qty: 1
+name: product.name,
+price: finalPrice,
+image: product.image,
+qty: 1,
+cod: false
 }];
 
 updateCartCount();
 checkout();
+
 }
 
 function addCartById(id){
