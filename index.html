@@ -1206,6 +1206,23 @@ let finalPrice = discount > 0
   : selectedProduct.price;
 
 document.getElementById("pPrice").innerHTML = `
+
+if(selectedProduct.cod){
+
+document.getElementById("codStatus").innerHTML =
+"‚úÖ Cash on Delivery Available";
+
+document.getElementById("codStatus").style.color = "green";
+
+}else{
+
+document.getElementById("codStatus").innerHTML =
+"‚ùå Online Payment Required";
+
+document.getElementById("codStatus").style.color = "red";
+
+}
+
 <h2 style="color:green;">‚Çπ${finalPrice}</h2>
 
 ${discount > 0 ? `
@@ -1825,7 +1842,9 @@ price: Number(document.getElementById("finalPrice").innerText.replace("Total : ‚
 
 image: selectedProduct.image,
 
-qty:1
+qty:1,
+
+cod: selectedProduct.cod 
 
 }];
 
@@ -1834,6 +1853,8 @@ updateCartCount();
 checkout();
 
 }
+
+
 let qty = 1;
 
 function plusQty(){
@@ -1906,7 +1927,9 @@ price: Number(document.getElementById("finalPrice").innerText.replace("Total : ‚
 
 image:selectedProduct.image,
 
-qty:qty
+qty:qty,
+
+cod:selectedProduct.cod 
 
 });
 
@@ -2154,6 +2177,8 @@ checkout();
 <h2 id="pName"></h2>
 
 <div id="pPrice"></div>
+
+<div id="codStatus" style="margin:10px 0;font-weight:bold;font-size:16px;"></div>
 
 <div id="variantBox" style="margin:20px 0;">
 
