@@ -173,49 +173,72 @@ transform:translateY(-5px) scale(1.05);
 
 /* SIDEBAR */
 
-.container{
+.categoriesBar{
+
 display:flex;
-gap:20px;
-padding:20px;
+
+justify-content:center;
+
+align-items:center;
+
+overflow-x:auto;
+
+gap:12px;
+
+padding:15px;
+
+margin:15px auto;
+
+scrollbar-width:none;
+
 }
 
-.sidebar{
-width:240px;
-background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.1);
-backdrop-filter:blur(20px);
-padding:20px;
-border-radius:25px;
-height:fit-content;
-box-shadow:0 10px 30px rgba(0,0,0,0.25);
+.categoriesBar::-webkit-scrollbar{
+display:none;
 }
 
-.sidebar h3{
-margin-bottom:15px;
-font-size:24px;
-}
+.catBtn{
 
-.sidebar div{
-padding:14px;
-margin:8px 0;
-border-radius:14px;
-background:rgba(255,255,255,0.05);
-cursor:pointer;
-transition:0.3s;
-}
+white-space:nowrap;
 
-.sidebar div:hover{
+padding:10px 18px;
+
 background:#22c55e;
-transform:translateX(6px);
+
+color:white;
+
+border-radius:25px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:.3s;
+
+flex-shrink:0;
+
+}
+
+.catBtn:hover{
+
+background:#15803d;
+
+transform:scale(1.05);
+
 }
 
 /* PRODUCTS */
 
 .products{
-flex:1;
+
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-gap:30px;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:18px;
+
+padding:15px;
+
 }
 
 .card{
@@ -452,8 +475,64 @@ overflow:auto;
 gap:10px;
 }
 
+.categoriesBar{
+
+justify-content:center;
+
+padding:10px;
+
+margin:10px auto;
+
+}
+
 .products{
-grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+
+grid-template-columns:repeat(3,1fr);
+
+gap:8px;
+
+padding:8px;
+
+}
+
+.card{
+
+padding:8px;
+
+border-radius:12px;
+
+}
+
+.card img{
+
+height:120px;
+
+}
+
+.card h3{
+
+font-size:13px;
+
+}
+
+.card p{
+
+font-size:11px;
+
+}
+
+.price{
+
+font-size:18px;
+
+}
+
+.card button{
+
+padding:6px;
+
+font-size:11px;
+
 }
 
 .header{
@@ -778,25 +857,21 @@ Logout
 </button>
 </div>
 
+<div class="categoriesBar">
 
+<div class="catBtn" onclick="loadProducts()">for you</div>
 
-<div class="container">
+<div class="catBtn" onclick="filter('Seeds')">Seeds</div>
 
-<div class="sidebar">
+<div class="catBtn" onclick="filter('Fertilizer')">Fertilizer</div>
 
-<h3>Categories</h3>
+<div class="catBtn" onclick="filter('Pesticide')">Pesticide</div>
 
-<div onclick="loadProducts()">All</div>
-<div onclick="filter('Seeds')">Seeds</div>
-<div onclick="filter('Fertilizer')">Fertilizer</div>
-<div onclick="filter('Pesticide')">Pesticide</div>
-<div onclick="filter('Tools')">Tools</div>
+<div class="catBtn" onclick="filter('Tools')">Tools</div>
 
 </div>
 
 <div class="products" id="products"></div>
-
-</div>
 
 
 <div class="trackBox">
@@ -1027,9 +1102,9 @@ ${p.description ? p.description.substring(0,60) + "..." : ""}
 
 ${p.cod 
 
- ? `<p style="color:blue;">✔ COD Available</p>` 
+ ? `<p style="color:blue;"><u><b>✔ Cash On Delivery Available</b></u></p>` 
 
- : `<p style="color:red;">❌ COD Not Available</p>`}    
+ : `<p style="color:red;"><u><b>❌ Cash On Delivery Not Available</b></u></p>`}    
 
 <p class="price">
 
