@@ -1143,89 +1143,68 @@ document.getElementById("products").innerHTML=html
 
 function openProductById(id){
 
-    window.scrollTo({
-    top: 0,
-    behavior: "smooth"
+window.scrollTo({
+top:0,
+behavior:"smooth"
 });
 
 selectedProduct = products.find(p => p.id == id);
-
 
 if(!selectedProduct){
 alert("Product not found");
 return;
 }
 
-document.getElementById("store").style.display = "none";
-document.getElementById("productPage").style.display = "block";
+document.getElementById("store").style.display="none";
+document.getElementById("productPage").style.display="block";
+document.getElementById("productPage").scrollTop=0;
 
-document.getElementById("productPage").scrollTop = 0;
+// ===== Images =====
 
-/* IMAGE FIX */
-document.getElementById("pImage").src = selectedProduct.image;
-
-// ===== Product Images =====
-let images = [
+let images=[
 selectedProduct.image,
 selectedProduct.image2 || selectedProduct.image,
 selectedProduct.image3 || selectedProduct.image,
 selectedProduct.image4 || selectedProduct.image
 ];
 
-// Main Image
-document.getElementById("pImage").src = images[0];
+currentImages=images;
+currentIndex=0;
 
-// Save Images
-currentImages = images;
-currentIndex = 0;
+document.getElementById("pImage").src=images[0];
 
-// Thumbnails
-document.getElementById("thumb1").src = images[0];
-document.getElementById("thumb2").src = images[1];
-document.getElementById("thumb3").src = images[2];
-document.getElementById("thumb4").src = images[3];
+document.getElementById("thumb1").src=images[0];
+document.getElementById("thumb2").src=images[1];
+document.getElementById("thumb3").src=images[2];
+document.getElementById("thumb4").src=images[3];
 
-// Thumbnail Click
-document.getElementById("thumb1").onclick = () => showImage(0);
-document.getElementById("thumb2").onclick = () => showImage(1);
-document.getElementById("thumb3").onclick = () => showImage(2);
-document.getElementById("thumb4").onclick = () => showImage(3);
+document.getElementById("thumb1").onclick=()=>showImage(0);
+document.getElementById("thumb2").onclick=()=>showImage(1);
+document.getElementById("thumb3").onclick=()=>showImage(2);
+document.getElementById("thumb4").onclick=()=>showImage(3);
 
-/* NAME */
-document.getElementById("pName").innerText = selectedProduct.name;
+// ===== Product =====
 
-/* CATEGORY / DESCRIPTION */
-document.getElementById("pDesc").innerText =
+document.getElementById("pName").innerText=selectedProduct.name;
+
+document.getElementById("pDesc").innerText=
 selectedProduct.description || selectedProduct.category;
 
-/* PRICE FIX */
-let discount = Number(selectedProduct.discount || 0);
+// ===== Price =====
 
-let finalPrice = discount > 0
-  ? Math.round(selectedProduct.price - (selectedProduct.price * discount / 100))
-  : selectedProduct.price;
+let discount=Number(selectedProduct.discount || 0);
 
-document.getElementById("pPrice").innerHTML = `
+let finalPrice=
+discount>0
+? Math.round(selectedProduct.price-(selectedProduct.price*discount/100))
+: selectedProduct.price;
 
-if(selectedProduct.cod){
-
-document.getElementById("codStatus").innerHTML =
-"✅ Cash on Delivery Available";
-
-document.getElementById("codStatus").style.color = "green";
-
-}else{
-
-document.getElementById("codStatus").innerHTML =
-"❌ Online Payment Required";
-
-document.getElementById("codStatus").style.color = "red";
-
-}
+document.getElementById("pPrice").innerHTML=`
 
 <h2 style="color:green;">₹${finalPrice}</h2>
 
-${discount > 0 ? `
+${discount>0?`
+
 <p style="text-decoration:line-through;color:gray;">
 ₹${selectedProduct.price}
 </p>
@@ -1233,22 +1212,46 @@ ${discount > 0 ? `
 <p style="color:blue;font-weight:bold;">
 ${discount}% OFF
 </p>
-` : ""}
+
+`:""}
+
 `;
 
-/* DISCOUNT STICKER FIX */
-document.getElementById("productDiscount").innerHTML =
-discount > 0
+// ===== COD Status =====
+
+if(selectedProduct.cod){
+
+document.getElementById("codStatus").innerHTML=
+"✅ Cash On Delivery Available";
+
+document.getElementById("codStatus").style.color="blue";
+
+}else{
+
+document.getElementById("codStatus").innerHTML=
+"❌ Online Payment Required";
+
+document.getElementById("codStatus").style.color="red";
+
+}
+
+// ===== Discount Sticker =====
+
+document.getElementById("productDiscount").innerHTML=
+discount>0
 ? `<div class="discountSticker">${discount}% OFF</div>`
 : "";
 
-selectedVariant = "100";
+// ===== Default Variant =====
+
+selectedVariant="100";
 changeVariant("100");
+
+// ===== Related Products =====
 
 loadRelatedProducts();
 
 }
-
 
 
 
