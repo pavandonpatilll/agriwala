@@ -1027,13 +1027,13 @@ ${p.description ? p.description.substring(0,60) + "..." : ""}
 
 ${p.cod 
 
- ? `<p style="color:green;">✔ COD Available</p>` 
+ ? `<p style="color:blue;">✔ COD Available</p>` 
 
  : `<p style="color:red;">❌ COD Not Available</p>`}    
 
 <p class="price">
 
-<span style="color:red;font-size:22px;font-weight:bold;">
+<span style="color:green;font-size:22px;font-weight:bold;">
 ₹${finalPrice}
 </span>
 
@@ -1046,7 +1046,7 @@ ${discount > 0 ? `
 
 <br>
 
-<span style="color:green;font-size:14px;">
+<span style="color:blue;font-size:14px;">
 You Save ₹${p.price - finalPrice}
 </span>
 ` : ""}
@@ -1131,14 +1131,14 @@ let finalPrice = discount > 0
   : selectedProduct.price;
 
 document.getElementById("pPrice").innerHTML = `
-<h2 style="color:red;">₹${finalPrice}</h2>
+<h2 style="color:green;">₹${finalPrice}</h2>
 
 ${discount > 0 ? `
 <p style="text-decoration:line-through;color:gray;">
 ₹${selectedProduct.price}
 </p>
 
-<p style="color:green;font-weight:bold;">
+<p style="color:blue;font-weight:bold;">
 ${discount}% OFF
 </p>
 ` : ""}
@@ -1643,7 +1643,7 @@ document.getElementById("productDiscount").innerHTML =
 
 document.getElementById("pPrice").innerHTML = `
 
-<h2 style="color:red;">
+<h2 style="color:green;">
 ₹${finalPrice}
 </h2>
 
@@ -1651,7 +1651,7 @@ document.getElementById("pPrice").innerHTML = `
 ₹${selectedProduct.price}
 </p>
 
-<p style="color:green;font-weight:bold;">
+<p style="color:blue;font-weight:bold;">
 💚 You Save ₹${selectedProduct.price-finalPrice}
 </p>
 
@@ -1838,65 +1838,105 @@ function showImage(index){
 
 }
 
-
 function loadRelatedProducts(){
 
-if(!selectedProduct) return;
+    if(!selectedProduct) return;
 
-let list = products.filter(p =>
-    p.category === selectedProduct.category &&
-    p.id !== selectedProduct.id
-);
+    let list = products.filter(p =>
+        p.category === selectedProduct.category &&
+        p.id !== selectedProduct.id
+    );
 
-// if no related products
-if(list.length === 0){
-    document.getElementById("relatedProducts").innerHTML =
-    "<p style='text-align:center;color:gray;'>No related products</p>";
-    return;
-}
+    if(list.length === 0){
+        document.getElementById("relatedProducts").innerHTML =
+        "<p style='text-align:center;color:gray;'>No related products</p>";
+        return;
+    }
 
-let html = "";
+    let html = "";
 
-list.forEach(p => {
+    list.forEach(p => {
 
-let discount = Number(p.discount || 0);
+        const discount = Number(p.discount || 0);
 
-let finalPrice = discount > 0
-  ? Math.round(p.price - (p.price * discount / 100))
-  : p.price;
+        const finalPrice = discount > 0
+            ? Math.round(p.price - (p.price * discount / 100))
+            : p.price;
 
-html += `
-<div class="relatedCard" onclick="openProductById(${p.id})">
+        html += `
 
-    ${discount > 0 ? `<div class="discountSticker">${discount}% OFF</div>` : ""}
+        <div class="relatedCard" onclick="openProductById(${p.id})">
 
-    <img src="${p.image}">
+            ${discount > 0 ? `
+            <div class="discountSticker">
+                ${discount}% OFF
+            </div>` : ""}
 
-    <h4>${p.name}</h4>
+            <img src="${p.image}">
 
-    <p style="color:green;font-weight:bold;font-size:16px;">
-        ₹${finalPrice}
-    </p>
+            <h4>${p.name}</h4>
 
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+            <p style="font-size:13px;font-weight:bold;color:#28a745;">
+                ${p.category}
+            </p>
 
-        <button onclick="event.stopPropagation(); addCartFromRelated(${p.id})"
-        style="background:#22c55e;color:white;padding:6px 10px;border:none;border-radius:6px;">
-        Add
-        </button>
+            <p style="font-size:12px;color:#666;min-height:36px;">
+                ${p.description ? p.description.substring(0,55)+"..." : ""}
+            </p>
 
-        <button onclick="event.stopPropagation(); buyFromRelated(${p.id})"
-        style="background:#ff9800;color:white;padding:6px 10px;border:none;border-radius:6px;">
-        Buy
-        </button>
+            ${p.cod
+                ? `<p style="color:blue;font-size:13px;">✔ COD Available</p>`
+                : `<p style="color:red;font-size:13px;">❌ COD Not Available</p>`
+            }
 
-    </div>
+            <p style="margin-top:8px;">
 
-</div>
-`;
-});
+                <span style="font-size:20px;font-weight:bold;color:green;">
+                    ₹${finalPrice}
+                </span>
 
-document.getElementById("relatedProducts").innerHTML = html;
+                ${
+                    discount > 0
+                    ? `
+                    <br>
+
+                    <span style="text-decoration:line-through;color:gray;">
+                        ₹${p.price}
+                    </span>
+
+                    <br>
+
+                    <span style="color:blue;font-size:13px;">
+                        You Save ₹${p.price-finalPrice}
+                    </span>
+                    `
+                    : ""
+                }
+
+            </p>
+
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+
+                <button
+                onclick="event.stopPropagation(); addCartFromRelated(${p.id})"
+                style="background:#22c55e;color:white;padding:8px 12px;border:none;border-radius:8px;cursor:pointer;">
+                🛒 Add
+                </button>
+
+                <button
+                onclick="event.stopPropagation(); buyFromRelated(${p.id})"
+                style="background:#ff9800;color:white;padding:8px 12px;border:none;border-radius:8px;cursor:pointer;">
+                ⚡ Buy
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+    });
+
+    document.getElementById("relatedProducts").innerHTML = html;
 }
 
 function addCartFromRelated(id){
