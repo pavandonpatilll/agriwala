@@ -68,7 +68,9 @@ CREATE TABLE IF NOT EXISTS products(
     price500 INTEGER,
     price1000 INTEGER,   
                               
-    discount INTEGER DEFAULT 0
+    discount INTEGER DEFAULT 0,
+                   
+    cod INTEGER DEFAULT 1
 )
 """)
 
@@ -112,16 +114,13 @@ CREATE TABLE IF NOT EXISTS products(
     except:
         pass
 
-            #Banner
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS banners(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        image TEXT,
-        product_id INTEGER
-    )
-    """)
+    try:
+        cursor.execute("""
+        ALTER TABLE products
+        ADD COLUMN cod INTEGER DEFAULT 1
+        """)
+    except:
+        pass
 
     # ORDERS
     cursor.execute("""
@@ -234,7 +233,8 @@ def get_products():
     "price250": r[10],
     "price500": r[11],
     "price1000": r[12],
-    "discount": r[13]
+    "discount": r[13],
+    "cod": bool(r[14])
 })
 
     conn.close()
@@ -248,7 +248,7 @@ def add_product(data: dict):
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO products (name,price,category,description,image,image2,image3,image4,price100,price250,price500,price1000) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO products (name,price,category,description,image,image2,image3,image4,price100,price250,price500,price1000,cod) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
         (
          data.get("name"),
         data.get("price"),
@@ -261,7 +261,8 @@ def add_product(data: dict):
         data.get("price100"),
         data.get("price250"),
         data.get("price500"),
-        data.get("price1000")
+        data.get("price1000"),
+        1 if data.get("cod") else 0
 
         )
     )

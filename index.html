@@ -970,6 +970,8 @@ let data=await res.json()
 
 products = data
 
+console.log(products);
+
 const params = new URLSearchParams(window.location.search)
 const productId = params.get("id")
 
@@ -1022,6 +1024,12 @@ ${p.category}
 <p style="font-size:13px;color:#777;">
 ${p.description ? p.description.substring(0,60) + "..." : ""}
 </p>
+
+${p.cod 
+
+ ? `<p style="color:green;">✔ COD Available</p>` 
+
+ : `<p style="color:red;">❌ COD Not Available</p>`}    
 
 <p class="price">
 
@@ -1224,7 +1232,9 @@ price: products[i].price,
 
 image: products[i].image,
 
-qty:1
+qty:1,
+
+cod: products[i].cod
 
 })
 
@@ -1245,7 +1255,9 @@ price: products[i].price,
 
 image: products[i].image,
 
-qty:1
+qty:1,
+
+cod: products[i].cod
 
 }]
 
@@ -1336,6 +1348,17 @@ cart.forEach(item=>{
 total += item.price * item.qty
 
 })
+
+let codBlocked = cart.filter(item => item.cod === false);
+
+if(codBlocked.length > 0){
+
+let names = codBlocked.map(p => p.name).join(", ")
+
+alert("❌ COD not available for: " + names)
+
+return
+}
 
 try{
 

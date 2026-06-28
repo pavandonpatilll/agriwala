@@ -217,6 +217,11 @@
             <input type="file" id="imageFile3">
 
             <input type="file" id="imageFile4">
+
+            <label>
+  <input type="checkbox" id="codAllowed" checked>
+  Cash on Delivery Available
+</label>
             <button onclick="addProduct()">Add</button>
         </div>
 
@@ -348,7 +353,9 @@
     image: image,
     image2: image2,
     image3: image3,
-    image4: image4
+    image4: image4,
+
+    cod: document.getElementById("codAllowed").checked 
 }
 
             await fetch(API + "/add-product", {
