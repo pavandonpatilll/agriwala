@@ -91,12 +91,12 @@ padding:7px;
 background:transparent;
 border:none;
 outline:none;
-color:rgb(246, 243, 243);
+color:rgb(5, 4, 7);
 font-size:16px;
 }
 
 .search input::placeholder{
-color:#0b0808;
+color:#060806;
 }
 
 .search button{
@@ -160,7 +160,7 @@ border:none;
 border-radius:50px;
 font-size:18px;
 font-weight:bold;
-background:linear-gradient(45deg,#2d662d,#5d200d);
+background:linear-gradient(45deg,#2d442d,#705248);
 color:white;
 box-shadow:0 10px 30px rgba(188, 239, 6, 0.5);
 cursor:pointer;
@@ -859,13 +859,13 @@ Logout
 
 <div class="categoriesBar">
 
-<div class="catBtn" onclick="loadProducts()">🤗for you</div>
+<div class="catBtn" onclick="loadProducts()">🤗 for you</div>
 
-<div class="catBtn" onclick="filter('Seeds')">🌱Seeds</div>
+<div class="catBtn" onclick="filter('Seeds')">🌱 Seeds</div>
 
-<div class="catBtn" onclick="filter('Fertilizer')">🧪Fertilizer</div>
+<div class="catBtn" onclick="filter('Fertilizer')">🧪 Fertilizer</div>
 
-<div class="catBtn" onclick="filter('Pesticide')">🦠Pesticide</div>
+<div class="catBtn" onclick="filter('Pesticide')">🦠 Pesticide</div>
 
 <div class="catBtn" onclick="filter('Tools')">🔧Tools</div>
 
@@ -1226,11 +1226,8 @@ discount > 0
 : "";
 
 selectedVariant = "100";
+changeVariant("100");
 
-// ✅ ADMIN VARIANT PRICE DEFAULT SET
-variantPrice = Number(selectedProduct.price100 || selectedProduct.price);
-
-updatePrice();
 loadRelatedProducts();
 
 }
@@ -1303,7 +1300,7 @@ cart.push({
 
 name: products[i].name,
 
-price: products[i].price,
+price: getPrice(products[i]).final,
 
 image: products[i].image,
 
@@ -1326,7 +1323,7 @@ cart=[{
 
 name: products[i].name,
 
-price: products[i].price,
+price: getPrice(products[i]).final,
 
 image: products[i].image,
 
