@@ -1421,6 +1421,59 @@ total += item.price * item.qty
 
 })
 
+// ✅ Check if ALL products are COD
+let allCOD = cart.every(item => item.cod === true);
+
+if(allCOD){
+
+let order = {
+
+farmer: farmer,
+
+items: cart,
+
+total: total,
+
+payment_id: "COD",
+
+payment_status: "COD",
+
+referral: farmer.referredBy || localStorage.getItem("usedRef"),
+
+myRef: localStorage.getItem("myRef"),
+
+discount: 0
+
+};
+
+await fetch(API + "/order",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body: JSON.stringify(order)
+
+});
+
+alert(
+"🎉 Order Placed Successfully!\n\n" +
+"💵 Payment Mode : Cash On Delivery\n" +
+"🚚 Pay when product is delivered."
+);
+
+cart=[];
+
+updateCartCount();
+
+closeCart();
+
+return;
+
+}
+
 let codBlocked = cart.filter(item => item.cod === false);
 
 if(codBlocked.length > 0){
