@@ -1400,7 +1400,7 @@ ${discount}% OFF
 </p>
 ` : ""}
 
-<p style="color:blue;font-size:12px;">💵 COD Product</p>
+<p style="color:blue;font-size:12px;">💵 Cash On Delivery Product</p>
 
 <p>Qty: ${p.qty}</p>
 
@@ -1439,7 +1439,7 @@ ${discount}% OFF
 </p>
 ` : ""}
 
-<p style="color:red;font-size:12px;">💳 Online Product</p>
+<p style="color:red;font-size:12px;">💳 Online Paid Delivery Product</p>
 
 <p>Qty: ${p.qty}</p>
 
@@ -1457,20 +1457,20 @@ style="background:#444;color:white;padding:8px 12px;margin-bottom:10px;">
 
 <hr>
 
-<h3>💵 COD ITEMS</h3>
-${codCart.length ? codHTML : "<p>No COD items</p>"}
+<h3>💵 Cash On Delivery Items</h3>
+${codCart.length ? codHTML : "<p>No Cash On Delivery items</p>"}
 
 ${codCart.length ? `
 <button onclick="checkoutCOD()"
 style="background:green;color:white;padding:10px;margin:10px 0;">
-💵 COD Checkout
+💵 Cash On Delivery Checkout
 </button>
 ` : ""}
 
 <hr>
 
-<h3>💳 PAID ITEMS</h3>
-${paidCart.length ? paidHTML : "<p>No Paid items</p>"}
+<h3>💳 Online Paid Delivery Items</h3>
+${paidCart.length ? paidHTML : "<p>No Online Paid Delivery items</p>"}
 
 ${paidCart.length ? `
 <button onclick="checkoutPAID()"
