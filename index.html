@@ -1373,7 +1373,7 @@ let codCart = cart.filter(i => i.cod === true)
 let paidCart = cart.filter(i => i.cod === false)
 
 // 💵 COD
-codCart.forEach((p)=>{
+codCart.forEach(p=>{
 codHTML += `
 <div>
 💵 ${p.name} x ${p.qty}
@@ -1382,7 +1382,7 @@ codHTML += `
 })
 
 // 💳 PAID
-paidCart.forEach((p)=>{
+paidCart.forEach(p=>{
 paidHTML += `
 <div>
 💳 ${p.name} x ${p.qty}
@@ -1392,17 +1392,33 @@ paidHTML += `
 
 document.getElementById("cartItems").innerHTML = `
 
-<h3>💵 COD ITEMS</h3>
-${codHTML || "No COD items"}
+<h2>🛒 Your Cart</h2>
 
-<button onclick="checkoutCOD()">Checkout COD</button>
+<!-- 🔙 BACK BUTTON -->
+<button onclick="closeCart()"
+style="background:#444;color:white;padding:8px 12px;margin-bottom:10px;">
+⬅ Back to Store
+</button>
+
+<hr>
+
+<h3>💵 COD ITEMS</h3>
+${codHTML || "<p>No COD items</p>"}
+
+<button onclick="checkoutCOD()"
+style="background:green;color:white;padding:10px;margin:10px 0;">
+💵 COD Checkout
+</button>
 
 <hr>
 
 <h3>💳 PAID ITEMS</h3>
-${paidHTML || "No Paid items"}
+${paidHTML || "<p>No Paid items</p>"}
 
-<button onclick="checkoutPAID()">Checkout Online</button>
+<button onclick="checkoutPAID()"
+style="background:blue;color:white;padding:10px;margin:10px 0;">
+💳 Pay Online
+</button>
 
 `
 }
