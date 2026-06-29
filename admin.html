@@ -232,6 +232,21 @@
 
         <div class="box">
             <h3>Orders</h3>
+          
+            <div style="margin:10px 0;">
+
+<button onclick="loadOrders()">All</button>
+
+<button onclick="loadOrders('COD')">💵 COD</button>
+
+<button onclick="loadOrders('PAID')">💳 PAID</button>
+
+<button onclick="loadOrders('Pending')">⏳ Pending</button>
+
+<button onclick="loadOrders('Delivered')">✅ Delivered</button>
+
+</div>
+
             <div id="orders">⏳ Loading...</div>
         </div>
         <div class="box">
@@ -452,7 +467,8 @@ Delete
 
 
         /* ORDERS */
-        async function loadOrders() {
+
+        async function loadOrders(filter = "All") {
 
             let res = await fetch(API + "/orders")
             let data = await res.json()
@@ -466,7 +482,17 @@ Delete
 
             let html = ""
 
+           
+
             data.forEach(o => {
+
+                if(filter==="COD" && o.payment_status!=="COD") return;
+
+if(filter==="PAID" && o.payment_status!=="PAID") return;
+
+if(filter==="Pending" && o.status!=="Pending") return;
+
+if(filter==="Delivered" && o.status!=="Delivered") return;
 
                 let itemsHTML = ""
                 o.items?.forEach(i => {
@@ -477,11 +503,39 @@ Delete
                     ? "delivered"
                     : "pending"
 
+                    let paymentBadge = o.payment_status === "COD"
+?
+`<span style="
+background:#4CAF50;
+color:white;
+padding:4px 10px;
+border-radius:20px;
+font-size:12px;
+font-weight:bold;
+">
+💵 COD
+</span>`
+:
+`<span style="
+background:#2196F3;
+color:white;
+padding:4px 10px;
+border-radius:20px;
+font-size:12px;
+font-weight:bold;
+">
+💳 PAID
+</span>`;
+
                 html += `
 <div class="order">
 <b>${o.name}</b><br>
 📞 ${o.mobile}<br>
-📍 ${o.location}<br><br>
+📍 ${o.location}<br>
+
+Payment : ${paymentBadge}
+
+<br><br>
 
 ${itemsHTML}
 
