@@ -232,14 +232,81 @@
 
         <div class="box">
             <h3>Orders</h3>
+
+            <div style="margin:15px 0;display:flex;gap:10px;flex-wrap:wrap;">
+
+<input
+type="date"
+id="filterDate"
+onchange="loadOrders()"
+style="
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+">
+
+<input
+type="text"
+id="searchOrder"
+placeholder="🔍 Search Mobile / Order ID"
+onkeyup="loadOrders()"
+style="
+padding:10px;
+width:260px;    
+border-radius:8px;
+border:1px solid #ccc;
+">
+
+</div>
+
+
+<div class="dashboard" style="margin:15px 0;">
+
+<div class="stat">
+📦<br>
+<b id="totalOrders">0</b><br>
+Orders
+</div>
+
+<div class="stat">
+💵<br>
+<b id="codOrders">0</b><br>
+Cash On Delevery
+</div>
+
+<div class="stat">
+💳<br>
+<b id="paidOrders">0</b><br>
+ Online paid
+</div>
+
+<div class="stat">
+🟡<br>
+<b id="pendingOrders">0</b><br>
+Pending
+</div>
+
+<div class="stat">
+🟢<br>
+<b id="deliveredOrders">0</b><br>
+Delivered
+</div>
+
+<div class="stat">
+💰<br>
+<b id="totalRevenue">₹0</b><br>
+Revenue
+</div>
+
+</div>
           
             <div style="margin:10px 0;">
 
 <button onclick="loadOrders()">All</button>
 
-<button onclick="loadOrders('COD')">💵 COD</button>
+<button onclick="loadOrders('COD')">💵 Cash On Delevery</button>
 
-<button onclick="loadOrders('PAID')">💳 PAID</button>
+<button onclick="loadOrders('PAID')">💳  Online paid</button>
 
 <button onclick="loadOrders('Pending')">⏳ Pending</button>
 
@@ -482,11 +549,51 @@ Delete
 
             let html = ""
 
+            let totalOrders = 0;
+
+           let codOrders = 0;
+
+           let paidOrders = 0;
+
+           let pendingOrders = 0;
+
+           let deliveredOrders = 0;
+
+           let totalRevenue = 0;
+
            
+            let selectedDate = document.getElementById("filterDate").value;
+            let search = document.getElementById("searchOrder").value.toLowerCase().trim();
 
             data.forEach(o => {
+                
+                // 📅 Date Filter
+if(selectedDate){
 
-                if(filter==="COD" && o.payment_status!=="COD") return;
+let orderDate = o.date.split(" ")[0];
+
+if(orderDate !== selectedDate) return;
+
+}
+
+// 🔍 Search Mobile / Order ID
+if(search){
+
+let mobile = String(o.mobile || "").toLowerCase();
+
+let orderId = String(o.id || "").toLowerCase();
+
+if(
+!mobile.includes(search) &&
+!orderId.includes(search)
+){
+return;
+}
+
+}
+
+
+if(filter==="COD" && o.payment_status!=="COD") return;
 
 if(filter==="PAID" && o.payment_status!=="PAID") return;
 
@@ -494,10 +601,69 @@ if(filter==="Pending" && o.status!=="Pending") return;
 
 if(filter==="Delivered" && o.status!=="Delivered") return;
 
-                let itemsHTML = ""
-                o.items?.forEach(i => {
-                    itemsHTML += `<div class="item-box">${i.name} x ${i.qty}</div>`
-                })
+// 📊 Dashboard Count
+
+totalOrders++;
+
+totalRevenue += Number(o.total || 0);
+
+if(o.payment_status === "COD"){
+    codOrders++;
+}else{
+    paidOrders++;
+}
+
+if(o.status === "Pending"){
+    pendingOrders++;
+}else if(o.status === "Delivered"){
+    deliveredOrders++;
+}
+
+               let itemsHTML = "";
+
+o.items?.forEach(i => {
+
+itemsHTML += `
+
+<div class="item-box"
+style="
+display:flex;
+align-items:center;
+gap:12px;
+margin:8px 0;
+">
+
+<img
+src="${i.image}"
+style="
+width:60px;
+height:60px;
+object-fit:contain;
+border-radius:8px;
+border:1px solid #ddd;
+">
+
+<div>
+
+<b>${i.name}</b><br>
+
+Qty : ${i.qty}
+
+<br>
+
+Price : ₹${i.price}
+
+<br>
+
+Subtotal : ₹${Number(i.price) * Number(i.qty)}
+
+</div>
+
+</div>
+
+`;
+
+});
 
                 let statusClass = o.status === "Delivered"
                     ? "delivered"
@@ -513,7 +679,7 @@ border-radius:20px;
 font-size:12px;
 font-weight:bold;
 ">
-💵 COD
+💵 Cash Online Delevery
 </span>`
 :
 `<span style="
@@ -524,29 +690,64 @@ border-radius:20px;
 font-size:12px;
 font-weight:bold;
 ">
-💳 PAID
+💳 online paid
 </span>`;
 
-                html += `
-<div class="order">
-<b>${o.name}</b><br>
+               html += `
+   <div class="order">
+
+📦 <b>Order ID:</b> ${o.id}<br><br>
+
+👤 <b>${o.name}</b><br>
 📞 ${o.mobile}<br>
 📍 ${o.location}<br>
+
+💰 <b>Total:</b> ₹${o.total}<br>
+
+📅 <b>Date:</b> ${
+o.date
+? new Date(o.date).toLocaleString()
+: "N/A"
+}<br><br>
 
 Payment : ${paymentBadge}
 
 <br><br>
 
+
+
 ${itemsHTML}
 
-<br>Status: <span class="${statusClass}">${o.status}</span><br><br>
+<br>
 
-<button onclick="updateStatus(${o.id})">✔ Done</button>
+Status :
+<span class="${statusClass}">
+${o.status}
+</span>
+
+<br><br>
+
+<button onclick="updateStatus(${o.id})">
+✔ Mark Delivered
+</button>
+
 </div>
 `
             })
 
             orders.innerHTML = html
+
+            document.getElementById("totalOrders").innerText = totalOrders;
+
+document.getElementById("codOrders").innerText = codOrders;
+
+document.getElementById("paidOrders").innerText = paidOrders;
+
+document.getElementById("pendingOrders").innerText = pendingOrders;
+
+document.getElementById("deliveredOrders").innerText = deliveredOrders;
+
+document.getElementById("totalRevenue").innerText = "₹" + totalRevenue;
 
         }
 
