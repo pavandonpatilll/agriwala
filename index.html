@@ -1364,35 +1364,92 @@ function openCart(){
 document.getElementById("store").style.display="none"
 document.getElementById("cartPage").style.display="block"
 
-let codHTML = ""
-let paidHTML = ""
-
 let codCart = cart.filter(i => i.cod === true)
 let paidCart = cart.filter(i => i.cod === false)
 
-// 💵 COD
+let codHTML = ""
+let paidHTML = ""
+
 codCart.forEach(p=>{
+
+let discount = Number(p.discount || 0)
+
+let finalPrice = discount > 0
+? Math.round(p.price - (p.price * discount / 100))
+: p.price
+
 codHTML += `
-<div>
-💵 ${p.name} x ${p.qty}
+<div class="cartCard">
+
+<img src="${p.image}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
+
+<div style="flex:1;margin-left:10px;">
+
+<h4>${p.name}</h4>
+
+<p style="color:green;font-weight:bold;">
+₹${finalPrice}
+</p>
+
+${discount > 0 ? `
+<p style="text-decoration:line-through;color:gray;">
+₹${p.price}
+</p>
+<p style="color:blue;font-size:12px;">
+${discount}% OFF
+</p>
+` : ""}
+
+<p style="color:blue;font-size:12px;">💵 COD Product</p>
+
+<p>Qty: ${p.qty}</p>
+
+</div>
 </div>
 `
 })
 
-// 💳 PAID
 paidCart.forEach(p=>{
+
+let discount = Number(p.discount || 0)
+
+let finalPrice = discount > 0
+? Math.round(p.price - (p.price * discount / 100))
+: p.price
+
 paidHTML += `
-<div>
-💳 ${p.name} x ${p.qty}
+<div class="cartCard">
+
+<img src="${p.image}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
+
+<div style="flex:1;margin-left:10px;">
+
+<h4>${p.name}</h4>
+
+<p style="color:green;font-weight:bold;">
+₹${finalPrice}
+</p>
+
+${discount > 0 ? `
+<p style="text-decoration:line-through;color:gray;">
+₹${p.price}
+</p>
+<p style="color:blue;font-size:12px;">
+${discount}% OFF
+</p>
+` : ""}
+
+<p style="color:red;font-size:12px;">💳 Online Product</p>
+
+<p>Qty: ${p.qty}</p>
+
+</div>
 </div>
 `
 })
 
 document.getElementById("cartItems").innerHTML = `
 
-<h2>🛒 Your Cart</h2>
-
-<!-- 🔙 BACK BUTTON -->
 <button onclick="closeCart()"
 style="background:#444;color:white;padding:8px 12px;margin-bottom:10px;">
 ⬅ Back to Store
@@ -1401,22 +1458,26 @@ style="background:#444;color:white;padding:8px 12px;margin-bottom:10px;">
 <hr>
 
 <h3>💵 COD ITEMS</h3>
-${codHTML || "<p>No COD items</p>"}
+${codCart.length ? codHTML : "<p>No COD items</p>"}
 
+${codCart.length ? `
 <button onclick="checkoutCOD()"
 style="background:green;color:white;padding:10px;margin:10px 0;">
 💵 COD Checkout
 </button>
+` : ""}
 
 <hr>
 
 <h3>💳 PAID ITEMS</h3>
-${paidHTML || "<p>No Paid items</p>"}
+${paidCart.length ? paidHTML : "<p>No Paid items</p>"}
 
+${paidCart.length ? `
 <button onclick="checkoutPAID()"
 style="background:blue;color:white;padding:10px;margin:10px 0;">
 💳 Pay Online
 </button>
+` : ""}
 
 `
 }
