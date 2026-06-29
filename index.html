@@ -2093,36 +2093,42 @@ function loadRelatedProducts(){
 function addCartFromRelated(id){
 
 let p = products.find(x => x.id === id);
+if(!p) return;
+
+let discount = Number(p.discount || 0);
+
+let finalPrice = discount > 0
+? Math.round(p.price - (p.price * discount / 100))
+: p.price;
 
 cart.push({
 name: p.name,
-price: p.price,
+price: finalPrice,
 image: p.image,
-qty: 1
+qty: 1,
+cod: p.cod === true   // important fix
 });
 
 updateCartCount();
-alert("Added");
+alert("✅ Added");
 }
+
 
 function buyFromRelated(id){
 
 let product = products.find(p => p.id == id);
-
 if(!product){
 alert("Product not found");
 return;
 }
 
-// discount price calculate
 let discount = Number(product.discount || 0);
 
-let finalPrice =
-discount > 0
+let finalPrice = discount > 0
 ? Math.round(product.price - (product.price * discount / 100))
 : product.price;
 
-// COD = FREE ORDER
+// COD ORDER
 if(product.cod === true){
 
 let order = {
@@ -2157,7 +2163,7 @@ closeCart();
 return;
 }
 
-// ❌ NOT COD → PAID ORDER
+// PAID ORDER
 cart = [{
 name: product.name,
 price: finalPrice,
@@ -2170,6 +2176,8 @@ updateCartCount();
 checkout();
 
 }
+
+
 
 function addCartById(id){
 
