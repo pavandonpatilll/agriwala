@@ -201,13 +201,13 @@ display:none;
 
 white-space:nowrap;
 
-padding:20px 55px;
+padding:5px 40px;
 
-background:#072907;
+background:#481741;
 
 color:oklch(100% 0.00011 271.152);
 
-border-radius:25px;
+border-radius:20px;
 
 font-weight:bold;
 
@@ -221,7 +221,7 @@ flex-shrink:0;
 
 .catBtn:hover{
 
-background:#15803d;
+background:#07ee5c;
 
 transform:scale(1.05);
 
@@ -1152,6 +1152,20 @@ Buy Now
 })
 
 document.getElementById("products").innerHTML=html
+
+}
+
+function filter(category){
+
+let filtered = products.filter(p =>
+
+String(p.category || "")
+.toLowerCase()
+.includes(category.toLowerCase())
+
+);
+
+displayProducts(filtered);
 
 }
 
