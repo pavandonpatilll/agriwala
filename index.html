@@ -1366,19 +1366,116 @@ function openCart(){
 document.getElementById("store").style.display="none"
 document.getElementById("cartPage").style.display="block"
 
-let html=""
+let codHTML = ""
+let paidHTML = ""
 
-cart.forEach((p,i)=>{
-html+=`
-<div class="cartItem">
-${p.name} x ${p.qty}
-<button class="remove" onclick="removeCart(${i})">Remove</button>
+let codCart = cart.filter(i => i.cod === true)
+let paidCart = cart.filter(i => i.cod === false)
+
+// 💵 COD
+codCart.forEach((p)=>{
+codHTML += `
+<div>
+💵 ${p.name} x ${p.qty}
 </div>
 `
 })
 
-document.getElementById("cartItems").innerHTML=html
+// 💳 PAID
+paidCart.forEach((p)=>{
+paidHTML += `
+<div>
+💳 ${p.name} x ${p.qty}
+</div>
+`
+})
 
+document.getElementById("cartItems").innerHTML = `
+
+<h3>💵 COD ITEMS</h3>
+${codHTML || "No COD items"}
+
+<button onclick="checkoutCOD()">Checkout COD</button>
+
+<hr>
+
+<h3>💳 PAID ITEMS</h3>
+${paidHTML || "No Paid items"}
+
+<button onclick="checkoutPAID()">Checkout Online</button>
+
+`
+}
+
+async function checkoutCOD(){
+
+let codCart = cart.filter(i => i.cod === true);
+
+let total = 0;
+
+codCart.forEach(i=>{
+total += getFinalPrice(i) * i.qty;
+});
+
+let order = {
+farmer: farmer,
+items: codCart,
+total: total,
+payment_id: "COD",
+payment_status: "COD",
+referral: farmer.referredBy || localStorage.getItem("usedRef"),
+myRef: localStorage.getItem("myRef"),
+discount: 0
+};
+
+await fetch(API+"/order",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body: JSON.stringify(order)
+});
+
+alert("💵 COD ORDER PLACED");
+
+cart = cart.filter(i => i.cod === false);
+openCart();
+updateCartCount();
+}
+
+async function checkoutPAID(){
+
+let paidCart = cart.filter(i => i.cod === false);
+
+let total = 0;
+
+paidCart.forEach(i=>{
+total += getFinalPrice(i) * i.qty;
+});
+
+let res = await fetch(API+"/create-payment",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body: JSON.stringify({
+amount: total,
+name: farmer.name,
+mobile: farmer.mobile,
+farmer: farmer,
+items: paidCart,
+referral: farmer.referredBy || localStorage.getItem("usedRef"),
+myRef: localStorage.getItem("myRef"),
+discount: 0
+})
+});
+
+let data = await res.json();
+
+const cashfree = Cashfree({mode:"production"});
+
+cashfree.checkout({
+paymentSessionId: data.payment_session_id,
+redirectTarget:"_modal"
+});
+
+alert("💳 Payment Started");
 }
 
 function removeCart(i){
@@ -1923,24 +2020,18 @@ updatePrice();
 function addSelectedToCart(){
 
 cart.push({
-
-name:selectedProduct.name,
-
-price: Number(document.getElementById("finalPrice").innerText.replace("Total : ₹","")),
-
-image:selectedProduct.image,
-
-qty:qty,
-
-cod:selectedProduct.cod 
-
+name: selectedProduct.name,
+price: selectedProduct.price,
+discount: selectedProduct.discount,
+image: selectedProduct.image,
+qty: qty,
+cod: selectedProduct.cod
 });
 
 updateCartCount();
-
-alert("✅ Added To Cart");
-
+alert("Added To Cart");
 }
+
 
 function changePhoto(src){
 
@@ -2095,22 +2186,17 @@ function addCartFromRelated(id){
 let p = products.find(x => x.id === id);
 if(!p) return;
 
-let discount = Number(p.discount || 0);
-
-let finalPrice = discount > 0
-? Math.round(p.price - (p.price * discount / 100))
-: p.price;
-
 cart.push({
 name: p.name,
-price: finalPrice,
+price: p.price,       // raw price
+discount: p.discount, // important
 image: p.image,
 qty: 1,
-cod: p.cod === true   // important fix
+cod: p.cod === true
 });
 
 updateCartCount();
-alert("✅ Added");
+alert("Added");
 }
 
 
@@ -2207,6 +2293,18 @@ qty:1
 
 updateCartCount();
 checkout();
+}
+
+function getFinalPrice(item){
+
+let price = item.price;
+let discount = Number(item.discount || 0);
+
+if(discount > 0){
+price = Math.round(price - (price * discount / 100));
+}
+
+return price;
 }
 
 </script>
