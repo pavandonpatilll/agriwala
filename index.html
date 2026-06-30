@@ -1444,6 +1444,8 @@ return
 }
 
 localStorage.setItem("kisanUser",JSON.stringify(farmer))
+localStorage.setItem("userName", farmer.name);
+localStorage.setItem("userMobile", farmer.mobile);
 
 document.getElementById("form").style.display="none"
 document.getElementById("store").style.display="block"
