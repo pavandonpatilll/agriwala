@@ -636,17 +636,15 @@ o.items?.forEach(i => {
 itemsHTML += `
 
 <div class="item-box"
-onclick="openAdminProduct(${i.product_id || i.id})"
 style="
 display:flex;
 align-items:center;
 gap:12px;
 margin:8px 0;
 cursor:pointer;
-background:#f9f9f9;
-padding:8px;
-border-radius:8px;
-">
+"
+
+onclick="openProductById(${i.id})">
 
 
 <img
