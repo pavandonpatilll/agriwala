@@ -879,8 +879,6 @@ Logout
 
     <div class="catBtn" onclick="filter('Pesticide')">🐛 Pesticide</div>
 
-    <div class="catBtn" onclick="filter('Insecticide')">🪲 Insecticide</div>
-
     <div class="catBtn" onclick="filter('Fungicide')">🍄 Fungicide</div>
 
     <div class="catBtn" onclick="filter('Herbicide')">🌿 Herbicide</div>
@@ -1157,17 +1155,26 @@ document.getElementById("products").innerHTML=html
 
 function filter(category){
 
-let filtered = products.filter(p =>
+let key = category.toLowerCase().trim();
 
-String(p.category || "")
-.toLowerCase()
-.includes(category.toLowerCase())
+let filtered = products.filter(p => {
 
-);
+let pCat = String(p.category || "").toLowerCase().trim();
+
+// 🤗 For You
+if(category === "all" || category === "for you"){
+return true;
+}
+
+// 🔥 smart matching (ANY category works)
+return pCat.includes(key);
+
+});
 
 displayProducts(filtered);
 
 }
+
 
 function openProductById(id){
 
