@@ -1197,6 +1197,12 @@ ${p.category}
 <p style="font-size:13px;color:#777;">
 ${p.description ? p.description.substring(0,60) + "..." : ""}
 </p>
+<p style="color:#f59e0b;font-weight:bold;font-size:15px;">
+⭐ ${p.rating || 5}
+<span style="color:#666;font-size:13px;">
+(${p.reviews || 0} Reviews)
+</span>
+</p>
 
 ${p.cod 
 
@@ -1368,9 +1374,52 @@ discount>0
 selectedVariant="100";
 changeVariant("100");
 
+// ===== Rating =====
+
+document.getElementById("productRating").innerHTML=`
+<p style="color:#f59e0b;font-size:18px;font-weight:bold;">
+⭐ ${selectedProduct.rating || 5}
+<span style="color:#666;font-size:14px;">
+(${selectedProduct.reviews || 0} Reviews)
+</span>
+</p>
+`;
+
+// ===== Overview =====
+
+document.getElementById("productOverview").innerHTML=`
+<h3>📋 Product Overview</h3>
+
+<ul style="line-height:28px;padding-left:20px;">
+<li>✅ Genuine Product</li>
+<li>🚚 Delivery in 2–5 Days</li>
+<li>💳 Secure Payment</li>
+<li>${selectedProduct.cod ? "✅ Cash On Delivery Available" : "❌ Online Payment Only"}</li>
+<li>🏷 Category : ${selectedProduct.category}</li>
+</ul>
+`;
+
 // ===== Related Products =====
 
 loadRelatedProducts();
+loadReviews();
+
+document.getElementById("reviewsBox").innerHTML = `
+<div style="background:#fff;padding:15px;border-radius:10px;margin-top:10px;border:1px solid #ddd;">
+    <b>⭐⭐⭐⭐⭐ Rahul Patil</b>
+    <p style="margin-top:8px;">Excellent product. Very good quality and fast delivery.</p>
+</div>
+
+<div style="background:#fff;padding:15px;border-radius:10px;margin-top:10px;border:1px solid #ddd;">
+    <b>⭐⭐⭐⭐ Amit Sharma</b>
+    <p style="margin-top:8px;">Nice packing. Product works as expected.</p>
+</div>
+
+<div style="background:#fff;padding:15px;border-radius:10px;margin-top:10px;border:1px solid #ddd;">
+    <b>⭐⭐⭐⭐⭐ Suresh</b>
+    <p style="margin-top:8px;">Best product for farming. Highly recommended.</p>
+</div>
+`;
 
 }
 
@@ -2324,6 +2373,13 @@ function loadRelatedProducts(){
                 ${p.description ? p.description.substring(0,55)+"..." : ""}
             </p>
 
+            <p style="color:#f59e0b;font-weight:bold;font-size:14px;">
+⭐ ${p.rating || 5}
+<span style="color:#666;font-size:12px;">
+(${p.reviews || 0} Reviews)
+</span>
+</p>
+
             ${p.cod
                 ? `<p style="color:blue;font-size:13px;">✔ COD Available</p>`
                 : `<p style="color:red;font-size:13px;">❌ COD Not Available</p>`
@@ -2505,6 +2561,86 @@ price = Math.round(price - (price * discount / 100));
 return price;
 }
 
+
+async function submitReview(){
+
+let stars = document.getElementById("reviewStars").value;
+let text = document.getElementById("reviewText").value.trim();
+
+if(text==""){
+alert("Please write your review.");
+return;
+}
+
+let userName = localStorage.getItem("userName") || "Customer";
+
+let res = await fetch(API + "/add-review",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+product_id:selectedProduct.id,
+name:userName,
+stars:Number(stars),
+review:text
+
+})
+
+});
+
+let data = await res.json();
+
+if(data.message){
+
+document.getElementById("reviewText").value="";
+document.getElementById("reviewStars").value="5";
+
+alert("✅ Review Submitted Successfully");
+
+loadReviews();
+
+}
+
+}
+
+
+async function loadReviews(){
+
+let res = await fetch(API + "/reviews/" + selectedProduct.id);
+
+let data = await res.json();
+
+let html = "";
+
+data.forEach(r=>{
+
+html += `
+<div style="background:#fff;padding:15px;border-radius:10px;margin-top:10px;border:1px solid #ddd;">
+
+<b>${"⭐".repeat(r.stars)} ${r.name}</b>
+
+<p style="margin-top:8px;">
+${r.review}
+</p>
+
+<small style="color:gray;">
+${r.date}
+</small>
+
+</div>
+`;
+
+});
+
+document.getElementById("reviewsBox").innerHTML = html;
+
+}
+
 </script>
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 <div id="productPage" style="display:none; padding:20px;">
@@ -2537,6 +2673,10 @@ return price;
 <div id="pPrice"></div>
 
 <div id="codStatus" style="margin:10px 0;font-weight:bold;font-size:16px;"></div>
+
+<div id="productRating"></div>
+
+<div id="productOverview"></div>
 
 <div id="variantBox" style="margin:20px 0;">
 
@@ -2585,6 +2725,38 @@ return price;
 <div style="margin-top:30px;">
     <h3>🔥 Related Products</h3>
     <div id="relatedProducts" class="relatedRow"></div>
+    <hr style="margin:30px 0;">
+
+
+<h3>✍️ Write a Review</h3>
+
+<div style="background:#fff;padding:15px;border-radius:10px;border:1px solid #ddd;margin-bottom:20px;">
+
+<select id="reviewStars" style="padding:8px;width:100%;margin-bottom:10px;">
+<option value="5">⭐⭐⭐⭐⭐ (5 Star)</option>
+<option value="4">⭐⭐⭐⭐ (4 Star)</option>
+<option value="3">⭐⭐⭐ (3 Star)</option>
+<option value="2">⭐⭐ (2 Star)</option>
+<option value="1">⭐ (1 Star)</option>
+</select>
+
+<textarea
+id="reviewText"
+placeholder="Write your review..."
+style="width:100%;height:90px;padding:10px;border-radius:8px;"></textarea>
+
+<br><br>
+
+<button onclick="submitReview()"
+style="background:#22c55e;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">
+Submit Review
+</button>
+
+</div>
+
+<h3>⭐ Customer Reviews</h3>
+
+<div id="reviewsBox"></div>
 
 </div>
 

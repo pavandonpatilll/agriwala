@@ -122,6 +122,22 @@ CREATE TABLE IF NOT EXISTS products(
     except:
         pass
 
+    try:
+        cursor.execute("""
+        ALTER TABLE products
+        ADD COLUMN rating REAL DEFAULT 5
+        """)
+    except:
+        pass
+
+    try:
+        cursor.execute("""
+        ALTER TABLE products
+        ADD COLUMN reviews INTEGER DEFAULT 0
+        """)
+    except:
+        pass
+
     # ORDERS
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS orders(
@@ -147,6 +163,17 @@ CREATE TABLE IF NOT EXISTS products(
        order_data TEXT
            )
                  """)
+
+    cursor.execute("""
+CREATE TABLE IF NOT EXISTS reviews(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER,
+    name TEXT,
+    stars INTEGER,
+    review TEXT,
+    created_at TEXT
+)
+""")
 
     # REFERRALS
     cursor.execute("""
@@ -212,30 +239,42 @@ def get_products():
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM products ORDER BY id DESC")
-
     rows = cursor.fetchall()
 
     products = []
 
     for r in rows:
 
-       products.append({
-    "id": r[0],
-    "name": r[1],
-    "price": r[2],
-    "category": r[3],
-    "description": r[4], 
-    "image": r[5],
-    "image2": r[6],
-    "image3": r[7],
-    "image4": r[8],
-    "price100": r[9],
-    "price250": r[10],
-    "price500": r[11],
-    "price1000": r[12],
-    "discount": r[13],
-    "cod": bool(r[14])
-})
+        # Average Rating
+        cursor.execute(
+            "SELECT ROUND(AVG(stars),1), COUNT(*) FROM reviews WHERE product_id=?",
+            (r[0],)
+        )
+
+        review = cursor.fetchone()
+
+        rating = review[0] if review[0] else 5
+        reviews = review[1] if review[1] else 0
+
+        products.append({
+            "id": r[0],
+            "name": r[1],
+            "price": r[2],
+            "category": r[3],
+            "description": r[4],
+            "image": r[5],
+            "image2": r[6],
+            "image3": r[7],
+            "image4": r[8],
+            "price100": r[9],
+            "price250": r[10],
+            "price500": r[11],
+            "price1000": r[12],
+            "discount": r[13],
+            "cod": bool(r[14]),
+            "rating": rating,
+            "reviews": reviews
+        })
 
     conn.close()
 
@@ -552,6 +591,63 @@ def place_order(data: dict):
     return {
         "message": "Order placed"
     }
+
+@app.post("/add-review")
+def add_review(data: dict):
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO reviews(
+        product_id,
+        name,
+        stars,
+        review,
+        created_at
+    )
+    VALUES(?,?,?,?,?)
+    """,(
+        data.get("product_id"),
+        data.get("name"),
+        data.get("stars"),
+        data.get("review"),
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return {"message":"Review Added"}
+
+@app.get("/reviews/{product_id}")
+def get_reviews(product_id: int):
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT name, stars, review, created_at
+    FROM reviews
+    WHERE product_id=?
+    ORDER BY id DESC
+    """, (product_id,))
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    data = []
+
+    for r in rows:
+        data.append({
+            "name": r[0],
+            "stars": r[1],
+            "review": r[2],
+            "date": r[3]
+        })
+
+    return data
 
 # ---------------- GET ORDERS ----------------
 @app.get("/orders")
