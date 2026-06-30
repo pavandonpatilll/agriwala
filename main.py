@@ -396,7 +396,6 @@ def place_order(data: dict):
     cursor = conn.cursor()
 
     farmer = data.get("farmer") or {}
-
     name = farmer.get("name") or data.get("name")
     mobile = farmer.get("mobile") or data.get("mobile")
     location = farmer.get("location") or data.get("location")
@@ -917,9 +916,9 @@ async def cashfree_webhook(request: Request):
 
             """, (
 
-                farmer.get("name"),
-                farmer.get("mobile"),
-                farmer.get("location"),
+                order_data.get("name"),
+                order_data.get("mobile"),
+                order_data.get("location"),
                 items,
                 order_data.get("amount", 0),
                 data["data"]["payment"]["cf_payment_id"],
