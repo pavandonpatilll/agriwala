@@ -789,6 +789,101 @@ cursor:pointer;
 font-weight:bold;
 }
 
+/* ===== Customer Care Toggle ===== */
+
+#supportPanel{
+position:fixed;
+left:0;
+top:100%;
+transform:translateY(-100%);
+z-index:99999;
+display:flex;
+align-items:center;
+}
+
+#supportToggle{
+
+background:#16a34a;
+color:white;
+
+border:none;
+
+padding:7px 10px;
+
+font-size:18px;
+
+font-weight:bold;
+
+border-radius:0 18px 18px 0;
+
+cursor:pointer;
+
+box-shadow:0 5px 15px rgba(0,0,0,.25);
+
+transition:.3s;
+
+}
+
+#supportToggle:hover{
+
+padding-right:30px;
+
+}
+
+#supportOptions{
+
+display:none;
+
+flex-direction:column;
+
+gap:12px;
+
+background:white;
+
+padding:15px;
+
+border-radius:0 15px 15px 0;
+
+box-shadow:0 5px 20px rgba(0,0,0,.2);
+
+}
+
+.supportLink{
+
+text-decoration:none;
+
+padding:12px 18px;
+
+border-radius:10px;
+
+font-weight:bold;
+
+color:white;
+
+text-align:center;
+
+transition:.3s;
+
+}
+
+.supportLink:first-child{
+
+background:#2563eb;
+
+}
+
+.supportLink:last-child{
+
+background:#25D366;
+
+}
+
+.supportLink:hover{
+
+transform:scale(1.05);
+
+}
+
 </style>
 </head>
 
@@ -844,9 +939,7 @@ font-weight:bold;
 🛒 Cart (<span id="cartCount">0</span>)
 </div>
 
-<button onclick="openMyOrders()" class="myOrdersBtn">
-🧾 My Orders
-</button>
+
 
 <button onclick="logout()" style="background:red;color:white;padding:8px;border:none;border-radius:5px;">
 Logout
@@ -946,16 +1039,6 @@ text-align:center;
 
 <br>
 
-
-
-</div>
-
-<div id="myOrdersPage" style="display:none;padding:20px;">
-    <h2>🧾 My Orders</h2>
-    <div id="myOrdersList"></div>
-</div>
-<br>
-<button onclick="backToStore()">⬅ Back</button>
 </div>
 
 
@@ -2643,6 +2726,35 @@ document.getElementById("reviewsBox").innerHTML = html;
 
 }
 
+function toggleSupport(event){
+
+event.stopPropagation();
+
+let menu = document.getElementById("supportOptions");
+
+if(menu.style.display=="flex"){
+
+menu.style.display="none";
+
+}else{
+
+menu.style.display="flex";
+
+}
+
+}
+document.addEventListener("click",function(e){
+
+let panel=document.getElementById("supportPanel");
+
+if(!panel.contains(e.target)){
+
+document.getElementById("supportOptions").style.display="none";
+
+}
+
+});
+
 </script>
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 <div id="productPage" style="display:none; padding:20px;">
@@ -2766,5 +2878,28 @@ Submit Review
 
 </div>
 
+<!-- Customer Support Toggle -->
+
+<div id="supportPanel">
+
+<div id="supportOptions">
+
+<a href="tel:+919529495061" class="supportLink">
+📞 Call Us
+</a>
+
+<a href="https://wa.me/919529495061"
+target="_blank"
+class="supportLink">
+💬 WhatsApp
+</a>
+
+</div>
+
+<button id="supportToggle" onclick="toggleSupport(event)">
+🎧 Customer care 24×7
+</button>
+
+</div>
 </body>
 </html>
