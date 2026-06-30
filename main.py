@@ -437,8 +437,8 @@ def place_order(data: dict):
         created_at,
         referral,
         myRef,
-        discount,
-        userId
+        discount
+                   
 
     )
 
@@ -583,8 +583,7 @@ def get_orders():
             "date": r[9],
             "referral": r[10],
             "myRef": r[11],
-            "discount": r[12],
-            "userId": r[13],
+            "discount": r[12]
 
         })
 

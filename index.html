@@ -969,13 +969,13 @@ text-align:center;
 
 async function loadMyOrders(){
 
-let userId = localStorage.getItem("userId");
+let mobile = document.getElementById("mobile").value;
 
 let res = await fetch(API + "/orders");
 let data = await res.json();
 
 let myOrders = data.filter(o =>
-    o.mobile === userId && o.status !== "Delivered"
+    o.mobile === mobile
 );
 
 let html = "";
@@ -1018,9 +1018,7 @@ ${itemsHTML}
 });
 
 document.getElementById("myOrdersList").innerHTML = html;
-
 }
-
 
 function backToStore(){
     document.getElementById("myOrdersPage").style.display = "none";
