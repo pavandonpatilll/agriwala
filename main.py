@@ -395,14 +395,14 @@ def place_order(data: dict):
     conn = get_conn()
     cursor = conn.cursor()
 
-    farmer = data.get("farmer")
+    farmer = data.get("farmer") or {}
 
-    if not farmer:
-        return {"error": "Farmer missing"}
+    name = farmer.get("name") or data.get("name")
+    mobile = farmer.get("mobile") or data.get("mobile")
+    location = farmer.get("location") or data.get("location")
 
-    name = farmer.get("name")
-    mobile = farmer.get("mobile")
-    location = farmer.get("location")
+    if not mobile:
+        return {"error": "Mobile missing"}
 
     items = json.dumps(data.get("items", []))
 

@@ -975,7 +975,7 @@ let res = await fetch(API + "/orders");
 let data = await res.json();
 
 let myOrders = data.filter(o =>
-    String(o.mobile).trim() === String(mobile).trim()
+String(o.mobile || "").trim() === String(mobile || "").trim()
 );
 
 let html = "";
