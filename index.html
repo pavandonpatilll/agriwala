@@ -969,13 +969,13 @@ text-align:center;
 
 async function loadMyOrders(){
 
-let mobile = document.getElementById("mobile").value;
+let mobile = localStorage.getItem("userMobile");
 
 let res = await fetch(API + "/orders");
 let data = await res.json();
 
 let myOrders = data.filter(o =>
-    o.mobile === mobile
+    String(o.mobile).trim() === String(mobile).trim()
 );
 
 let html = "";
