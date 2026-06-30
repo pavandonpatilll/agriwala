@@ -201,7 +201,7 @@ display:none;
 
 white-space:nowrap;
 
-padding:5px 40px;
+padding:10px 40px;
 
 background:#481741;
 
@@ -779,6 +779,16 @@ color:white;
     color: white;
 }
 
+.myOrdersBtn{
+background:#ff9800;
+color:white;
+padding:8px 12px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
 </style>
 </head>
 
@@ -833,6 +843,10 @@ color:white;
 <div class="cart" onclick="openCart()">
 🛒 Cart (<span id="cartCount">0</span>)
 </div>
+
+<button onclick="openMyOrders()" class="myOrdersBtn">
+🧾 My Orders
+</button>
 
 <button onclick="logout()" style="background:red;color:white;padding:8px;border:none;border-radius:5px;">
 Logout
@@ -936,9 +950,81 @@ text-align:center;
 
 </div>
 
+<div id="myOrdersPage" style="display:none;padding:20px;">
+    <h2>🧾 My Orders</h2>
+    <div id="myOrdersList"></div>
+</div>
+<br>
+<button onclick="backToStore()">⬅ Back</button>
+</div>
 
 
 <script>
+
+    function openMyOrders(){
+    document.getElementById("store").style.display = "none";
+    document.getElementById("myOrdersPage").style.display = "block";
+    loadMyOrders();
+}
+
+async function loadMyOrders(){
+
+let mobile = document.getElementById("mobile").value;
+
+let res = await fetch(API + "/orders");
+let data = await res.json();
+
+let myOrders = data.filter(o =>
+    o.mobile === mobile
+);
+
+let html = "";
+
+myOrders.forEach(o => {
+
+let itemsHTML = "";
+
+o.items.forEach(i => {
+itemsHTML += `
+<div style="display:flex;gap:10px;margin:10px 0;">
+<img src="${i.image}" style="width:50px;height:50px;">
+<div>
+<b>${i.name}</b><br>
+Qty: ${i.qty}<br>
+Price: ₹${i.price}
+</div>
+</div>
+`;
+});
+
+html += `
+<div style="background:white;padding:15px;margin:10px;border-radius:10px;">
+<h3>Order #${o.id}</h3>
+
+<p>💰 Total: ₹${o.total}</p>
+<p>📅 Date: ${o.date}</p>
+
+<p>💳 Payment: ${o.payment_status}</p>
+<p>📦 Status: ${o.status}</p>
+
+<p>🏷 Discount: ${o.discount || 0}%</p>
+<p>🚚 Delivery: 2–5 Days</p>
+
+<hr>
+${itemsHTML}
+</div>
+`;
+
+});
+
+document.getElementById("myOrdersList").innerHTML = html;
+}
+
+function backToStore(){
+    document.getElementById("myOrdersPage").style.display = "none";
+    document.getElementById("store").style.display = "block";
+}
+
 
     function getPrice(p){
     let price = Number(p.price || 0);
