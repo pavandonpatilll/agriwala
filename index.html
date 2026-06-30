@@ -1581,7 +1581,8 @@ image: products[i].image,
 
 qty:1,
 
-cod: products[i].cod
+cod: products[i].cod,
+category: products[i].category
 
 })
 
@@ -1993,7 +1994,13 @@ let order={
 
 farmer: farmer,
 
-items: cart,
+items: cart.map(i => ({
+  name: i.name,
+  price: i.price,
+  qty: i.qty,
+  cod: i.cod,
+  category: i.category   // ✅ ADD THIS
+})),
 
 total: total,
 
@@ -2357,7 +2364,8 @@ price: selectedProduct.price,
 discount: selectedProduct.discount,
 image: selectedProduct.image,
 qty: qty,
-cod: selectedProduct.cod
+cod: selectedProduct.cod,
+category: selectedProduct.category
 });
 
 updateCartCount();
@@ -2531,7 +2539,8 @@ price: p.price,       // raw price
 discount: p.discount, // important
 image: p.image,
 qty: 1,
-cod: p.cod === true
+cod: p.cod === true,
+category: product.category
 });
 
 updateCartCount();
@@ -2563,7 +2572,8 @@ name: product.name,
 price: finalPrice,
 image: product.image,
 qty: 1,
-cod: true
+cod: true,
+category: product.category
 }],
 total: finalPrice,
 payment_id: "COD",
@@ -2594,7 +2604,7 @@ name: product.name,
 price: finalPrice,
 image: product.image,
 qty: 1,
-cod: false
+cod: false,
 }];
 
 updateCartCount();
@@ -2627,7 +2637,9 @@ cart = [{
 name: product.name,
 price: product.price,
 image: product.image,
-qty:1
+qty:1,
+cod: product.cod,
+category: product.category
 }];
 
 updateCartCount();
