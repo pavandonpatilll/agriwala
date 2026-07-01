@@ -211,6 +211,7 @@ async function loadMyOrders(){
                 <img src="${i.image}">
                 <div>
                     <b>${i.name}</b><br>
+                    Category : ${i.category || "N/A"}<br>
                     Qty: ${i.qty}<br>
                     Price: ₹${i.price}
                 </div>
