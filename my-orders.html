@@ -40,6 +40,65 @@
 </head>
 
 <body>
+
+    <div id="supportBox"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+justify-content:center;
+align-items:center;
+">
+
+<div id="supportContent"
+style="
+background:white;
+padding:25px;
+border-radius:15px;
+text-align:center;
+min-width:250px;
+">
+
+<h3>📞 Customer Care 24*7</h3>
+
+<button onclick="openWhatsApp()"
+style="
+background:#25D366;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:25px;
+margin:10px;
+cursor:pointer;
+font-weight:bold;
+">
+💬 WhatsApp
+</button>
+
+<br>
+
+<button onclick="callSupport()"
+style="
+background:#ff1744;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:25px;
+margin:10px;
+cursor:pointer;
+font-weight:bold;
+">
+📞 Call Now
+</button>
+
+</div>
+
+</div>
+
     <button onclick="goBack()"
 style="
 background: linear-gradient(135deg,#2196F3,#0D47A1);
@@ -68,7 +127,50 @@ onmousedown="this.style.transform='scale(0.97)'"
 
 <div id="orders">Loading...</div>
 
+<button onclick="openSupportBox()"
+style="
+background: linear-gradient(135deg,#00c853,#009624);
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:30px;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 5px 15px rgba(0,200,83,0.4);
+display:inline-flex;
+align-items:center;
+gap:8px;
+"
+>
+📞 Customer Care 24*7
+</button>
+
 <script>
+
+
+    function openSupportBox(){
+    document.getElementById("supportBox").style.display = "flex";
+}
+
+function closeSupportBox(){
+    document.getElementById("supportBox").style.display = "none";
+}
+
+function openWhatsApp(){
+    window.open("https://wa.me/919529495061", "_blank");
+}
+
+function callSupport(){
+    window.location.href = "tel:+919529495061";
+}
+
+document.getElementById("supportBox").addEventListener("click", function(e){
+    if(e.target.id === "supportBox"){
+        closeSupportBox();
+    }
+});
+
 
     function goBack(){
     window.location.href = "index.html";
@@ -105,7 +207,7 @@ async function loadMyOrders(){
 
         o.items.forEach(i => {
             itemsHTML += `
-            <div class="item" onclick="openProduct(${i.id})">
+            <div class="item" onclick="openOrderedProduct(${i.id})">
                 <img src="${i.image}">
                 <div>
                     <b>${i.name}</b><br>
@@ -136,6 +238,19 @@ async function loadMyOrders(){
 
     document.getElementById("orders").innerHTML = html;
 }
+
+//function openOrderedProduct(id){
+
+  //  window.location.href = "index.html?id=" + id;
+
+//}
+function openOrderedProduct(id){
+
+
+    window.location.href = "index.html?id=" + id;
+
+}
+
 
 function openProduct(id){
     if(!id){

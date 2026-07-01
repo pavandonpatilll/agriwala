@@ -1238,43 +1238,50 @@ let variantPrice = 0;
 const API="https://agriwala.onrender.com";
 
 /* LOAD PRODUCTS */
-
 async function loadProducts(){
 
-document.getElementById("products").innerHTML="⏳ Loading products..."
+    document.getElementById("products").innerHTML = "⏳ Loading products...";
 
-try{
+    try{
 
-let res=await fetch(API+"/products")
-let data=await res.json()
+        let res = await fetch(API + "/products");
+        let data = await res.json();
 
-products = data
+        products = data;
 
-console.log(products);
+        console.log(products);
 
-const params = new URLSearchParams(window.location.search)
-const productId = params.get("id")
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get("id");
 
-if(productId){
+        if(productId){
 
-    let singleProduct = products.filter(
-        p => p.id == productId
-    )
+            let index = products.findIndex(
+                p => Number(p.id) === Number(productId)
+            );
 
-    displayProducts(singleProduct)
+            if(index !== -1){
 
-}else{
+                openProductById(productId);
+                return;
 
-    displayProducts(products)
+            }
+
+        }
+
+        displayProducts(products);
+
+    }catch(err){
+
+        console.error(err);
+
+        document.getElementById("products").innerHTML =
+        "❌ Server slow hai... refresh karo";
+
+    }
 
 }
 
-}catch(err){
-console.error(err)
-document.getElementById("products").innerHTML="❌ Server slow hai... refresh karo"
-}
-
-}
 
 function displayProducts(list){
 
@@ -1373,6 +1380,7 @@ displayProducts(filtered);
 }
 
 function openProductById(id){
+
 
 window.scrollTo({
 top:0,
