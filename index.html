@@ -1604,7 +1604,9 @@ image: products[i].image,
 
 qty:1,
 
-cod: products[i].cod
+cod: products[i].cod,
+
+category: products[i].category || "N/A"
 
 }]
 
@@ -2283,7 +2285,9 @@ image: selectedProduct.image,
 
 qty: qty,
 
-cod: selectedProduct.cod
+cod: selectedProduct.cod,
+
+category: selectedProduct.category || "N/A"
 
 }];
 
@@ -2540,7 +2544,7 @@ discount: p.discount, // important
 image: p.image,
 qty: 1,
 cod: p.cod === true,
-category: product.category
+category: p.category
 });
 
 updateCartCount();
@@ -2573,7 +2577,7 @@ price: finalPrice,
 image: product.image,
 qty: 1,
 cod: true,
-category: product.category
+category: i.category 
 }],
 total: finalPrice,
 payment_id: "COD",
@@ -2605,6 +2609,7 @@ price: finalPrice,
 image: product.image,
 qty: 1,
 cod: false,
+category: i.category 
 }];
 
 updateCartCount();
@@ -2633,19 +2638,23 @@ function buyNowById(id){
 
 let product = products.find(p => p.id == id);
 
+if(!product){
+alert("Product not found");
+return;
+}
+
 cart = [{
 name: product.name,
 price: product.price,
 image: product.image,
-qty:1,
+qty: 1,
 cod: product.cod,
-category: product.category
+category: product.category || "N/A"
 }];
 
 updateCartCount();
 checkout();
 }
-
 function getFinalPrice(item){
 
 let price = item.price;
