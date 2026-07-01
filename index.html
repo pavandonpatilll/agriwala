@@ -884,6 +884,7 @@ transform:scale(1.05);
 
 }
 
+
 </style>
 </head>
 
@@ -938,6 +939,30 @@ transform:scale(1.05);
 <div class="cart" onclick="openCart()">
 🛒 Cart (<span id="cartCount">0</span>)
 </div>
+
+
+<button onclick="openMyOrders()"
+style="
+background: linear-gradient(135deg,#ff6f00,#ff3d00);
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:30px;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 5px 15px rgba(255,87,34,0.4);
+display:inline-flex;
+align-items:center;
+gap:8px;
+transition:0.3s;
+"
+onmouseover="this.style.transform='scale(1.05)'"
+onmouseout="this.style.transform='scale(1)'"
+onmousedown="this.style.transform='scale(0.97)'"
+>
+🧾 My Orders
+</button>
 
 
 
@@ -1035,9 +1060,8 @@ text-align:center;
 
 <h2></h2>
 
-<div id="cartItems"></div>
+<div id="cartItems"></div><br>
 
-<br>
 
 </div>
 
@@ -1045,9 +1069,7 @@ text-align:center;
 <script>
 
     function openMyOrders(){
-    document.getElementById("store").style.display = "none";
-    document.getElementById("myOrdersPage").style.display = "block";
-    loadMyOrders();
+    window.location.href = "my-orders.html";
 }
 
 async function loadMyOrders(){

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Orders</title>
+    <style>
+        body{
+            font-family: Arial;
+            background:#f2f2f2;
+            margin:0;
+            padding:20px;
+        }
+
+        .order{
+            background:white;
+            padding:15px;
+            margin:10px 0;
+            border-radius:10px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .item{
+            display:flex;
+            gap:10px;
+            margin:8px 0;
+            padding:8px;
+            background:#f9f9f9;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        img{
+            width:60px;
+            height:60px;
+            object-fit:contain;
+        }
+
+        .pending{ color:orange; font-weight:bold; }
+        .delivered{ color:green; font-weight:bold; }
+    </style>
+</head>
+
+<body>
+    <button onclick="goBack()"
+style="
+background: linear-gradient(135deg,#2196F3,#0D47A1);
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:30px;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 5px 15px rgba(33,150,243,0.4);
+display:inline-flex;
+align-items:center;
+gap:8px;
+margin-bottom:15px;
+transition:0.3s;
+"
+onmouseover="this.style.transform='scale(1.05)'"
+onmouseout="this.style.transform='scale(1)'"
+onmousedown="this.style.transform='scale(0.97)'"
+>
+⬅ Back
+</button>
+
+<h2>📦 My Orders</h2>
+
+<div id="orders">Loading...</div>
+
+<script>
+
+    function goBack(){
+    window.location.href = "index.html";
+}
+
+const API = "https://agriwala.onrender.com";
+
+// 👉 mobile localStorage me store hoga (important)
+let userMobile = localStorage.getItem("userMobile");
+
+async function loadMyOrders(){
+
+    if(!userMobile){
+        document.getElementById("orders").innerHTML =
+        "⚠ Please login first";
+        return;
+    }
+
+    let res = await fetch(API + "/orders");
+    let data = await res.json();
+
+    let html = "";
+
+    data = data.filter(o => o.mobile == userMobile);
+
+    if(data.length === 0){
+        document.getElementById("orders").innerHTML = "No orders found";
+        return;
+    }
+
+    data.forEach(o => {
+
+        let itemsHTML = "";
+
+        o.items.forEach(i => {
+            itemsHTML += `
+            <div class="item" onclick="openProduct(${i.id})">
+                <img src="${i.image}">
+                <div>
+                    <b>${i.name}</b><br>
+                    Qty: ${i.qty}<br>
+                    Price: ₹${i.price}
+                </div>
+            </div>`;
+        });
+
+        html += `
+        <div class="order">
+            <b>Order ID:</b> ${o.id}<br>
+            💰 Total: ₹${o.total}<br>
+            💳 Payment: ${o.payment_status}<br>
+            📅 ${o.date}<br>
+
+            Status:
+            <span class="${o.status === 'Delivered' ? 'delivered' : 'pending'}">
+                ${o.status}
+            </span>
+
+            <hr>
+
+            ${itemsHTML}
+        </div>
+        `;
+    });
+
+    document.getElementById("orders").innerHTML = html;
+}
+
+function openProduct(id){
+    if(!id){
+        alert("Product ID missing");
+        return;
+    }
+    window.open("product.html?id=" + id, "_blank");
+}
+
+loadMyOrders();
+
+</script>
+
+</body>
+</html>

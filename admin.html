@@ -368,7 +368,14 @@ async function loadSingleProduct(id){
     let res = await fetch(API + "/products");
     let data = await res.json();
 
-    let p = data.find(x => x.id == id);
+    console.log("CLICKED ID:", id);
+    console.log("PRODUCTS:", data);
+
+    let p = data.find(x => 
+        String(x.id) === String(id) ||
+        String(x.productId) === String(id) ||
+        String(x._id) === String(id)
+    );
 
     if(!p){
         alert("Product not found");
