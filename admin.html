@@ -433,7 +433,7 @@ Revenue
 
     price: document.getElementById("productPrice").value,
 
-    category: document.getElementById("productCategory").value,
+    category: document.getElementById("productCategory").value.trim(),
 
     description: document.getElementById("description").value,
 
@@ -473,7 +473,8 @@ document.getElementById("price250").value = ""
 document.getElementById("price500").value = ""
 document.getElementById("price1000").value = ""
 
-            loadProducts()
+            await loadProducts();
+document.getElementById("productCategory").value = "";
         }
 
         /* PRODUCTS */
@@ -508,6 +509,10 @@ ${p.name}
 <img src="${p.image}">
 <h4>${p.name}</h4>
 
+<p style="color:green;font-weight:bold;">
+${p.category || "No Category"}
+</p>
+
 <p>₹${p.price}</p>
 
 <div style="display:flex;gap:8px;justify-content:center;">
@@ -530,7 +535,7 @@ Delete
     products.innerHTML = html;
 
     // Banner Dropdown
-    document.getElementById("bannerProduct").innerHTML = options;
+    //document.getElementById("bannerProduct").innerHTML = options;
 }
 
         /* DELETE */
@@ -660,6 +665,7 @@ border:1px solid #ddd;
 <div>
 
 <b>${i.name}</b><br>
+Category: ${i.category || "N/A"}<br>
 
 Qty : ${i.qty}
 

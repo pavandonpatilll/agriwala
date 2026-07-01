@@ -1083,7 +1083,7 @@ Price: ₹${i.price}
 
 html += `
 <div style="background:white;padding:15px;margin:10px;border-radius:10px;cursor:pointer;" onclick="viewOrder(${o.id})">
-    
+
 <h3>Order #${o.id}</h3>
 
 <p>💰 Total: ₹${o.total}</p>
@@ -1332,18 +1332,16 @@ document.getElementById("products").innerHTML=html
 
 function filter(category){
 
-let key = category.toLowerCase().trim();
+let key = String(category).toLowerCase().trim();
 
 let filtered = products.filter(p => {
 
 let pCat = String(p.category || "").toLowerCase().trim();
 
-// 🤗 For You
-if(category === "all" || category === "for you"){
+if(key === "all" || key === "for you"){
 return true;
 }
 
-// 🔥 smart matching (ANY category works)
 return pCat.includes(key);
 
 });
@@ -1351,7 +1349,6 @@ return pCat.includes(key);
 displayProducts(filtered);
 
 }
-
 
 function openProductById(id){
 
@@ -1849,10 +1846,10 @@ displayProducts(list)
 
 /* FILTER */
 
-function filter(cat){
-let list=products.filter(p=>p.category==cat)
-displayProducts(list)
-}
+//function filter(cat){
+//let list=products.filter(p=>p.category==cat)
+//displayProducts(list)
+//}
 
 /* CHECKOUT */
 async function checkout(){
