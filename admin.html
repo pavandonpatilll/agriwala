@@ -230,6 +230,38 @@
             <div id="products" class="products">⏳ Loading...</div>
         </div>
 
+
+        <div id="productModal" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+justify-content:center;
+align-items:center;
+">
+
+<div style="
+background:white;
+padding:20px;
+border-radius:10px;
+width:300px;
+position:relative;
+">
+
+<button onclick="closeProduct()" style="
+position:absolute;
+top:5px;
+right:10px;
+">❌</button>
+
+<div id="productView">Loading...</div>
+
+</div>
+</div>
+
         <div class="box">
             <h3>Orders</h3>
 
@@ -331,14 +363,51 @@ Revenue
 
     <script>
 
-        function openAdminProduct(id){
+async function loadSingleProduct(id){
+
+    let res = await fetch(API + "/products");
+    let data = await res.json();
+
+    let p = data.find(x => x.id == id);
+
+    if(!p){
+        alert("Product not found");
+        return;
+    }
+
+    document.getElementById("productView").innerHTML = `
+        <img src="${p.image}" style="width:100%;height:150px;object-fit:contain;">
+        <h3>${p.name}</h3>
+        <p>Category: ${p.category || "N/A"}</p>
+        <p>Price: ₹${p.price}</p>
+        <p>${p.description || ""}</p>
+    `;
+
+    document.getElementById("productModal").style.display = "flex";
+}
+
+function closeProduct(){
+    document.getElementById("productModal").style.display = "none";
+}
+
+
+        function openProductById(id){
     if(!id){
         alert("Product ID missing");
         return;
     }
 
-    window.open("/admin-product.html?id=" + id, "_blank");
+    loadSingleProduct(id);
 }
+
+      //  function openAdminProduct(id){
+    //if(!id){
+      //  alert("Product ID missing");
+        //return;
+    //}
+
+    //window.open("/admin-product.html?id=" + id, "_blank");
+//}
 
 
         const API = "https://agriwala.onrender.com";
@@ -649,8 +718,7 @@ margin:8px 0;
 cursor:pointer;
 "
 
-onclick="openProductById(${i.id})">
-
+onclick="openProductById('${i.id || i.productId}')">
 
 <img
 src="${i.image}"
