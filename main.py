@@ -27,18 +27,26 @@ CASHFREE_SECRET_KEY = os.getenv("CASHFREE_SECRET_KEY")
 
 CASHFREE_URL = "https://api.cashfree.com/pg/orders"
 
-# ---------------- FOLDERS ----------------
 
-if not os.path.exists("images"):
-    os.makedirs("images")
+# ---------------- STORAGE ----------------
 
-app.mount("/images", StaticFiles(directory="images"), name="images")
+DATA_DIR = "/var/data"
+
+os.makedirs(DATA_DIR, exist_ok=True)
+
+DB_PATH = os.path.join(DATA_DIR, "kisan_mart.db")
+
+IMAGE_DIR = os.path.join(DATA_DIR, "images")
+
+os.makedirs(IMAGE_DIR, exist_ok=True)
+
+app.mount("/images", StaticFiles(directory=IMAGE_DIR), name="images")
 
 # ---------------- DB ----------------
 
 def get_conn():
     return sqlite3.connect(
-        "kisan_mart.db",
+        DB_PATH,
         timeout=10,
         check_same_thread=False
     )
@@ -219,7 +227,7 @@ async def upload_image(file: UploadFile = File(...)):
 
     filename = f"{int(time.time())}_{file.filename}"
 
-    path = f"images/{filename}"
+    path = os.path.join(IMAGE_DIR, filename)
 
     with open(path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
