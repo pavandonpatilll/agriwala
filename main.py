@@ -480,9 +480,11 @@ def place_order(data: dict):
     cursor = conn.cursor()
 
     farmer = data.get("farmer") or {}
-    name = farmer.get("name") or data.get("name")
-    mobile = farmer.get("mobile") or data.get("mobile")
-    location = farmer.get("location") or data.get("location")
+
+    name = farmer.get("name", "")
+    mobile = farmer.get("mobile", "")
+    location = farmer.get("location", "")
+
     house = farmer.get("house", "")
     area = farmer.get("area", "")
     city = farmer.get("city", "")
@@ -505,72 +507,63 @@ def place_order(data: dict):
 
     myRef = data.get("myRef", "")
 
-    created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     discount = data.get("discount", 0)
 
-    # SAVE ORDER
+    created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     cursor.execute("""
 
     INSERT INTO orders(
 
-    name,
-    mobile,
-    location,
+        name,
+        mobile,
+        location,
+        house,
+        area,
+        city,
+        state,
+        pincode,
+        landmark,
+        items,
+        total,
+        payment_id,
+        payment_status,
+        status,
+        created_at,
+        referral,
+        myRef,
+        discount
 
-    house,
-    area,
-    city,
-    state,
-    pincode,
-    landmark,
+    )
 
-    items,
-    total,
-    payment_id,
-    payment_status,
-    status,
-    created_at,
-    referral,
-    myRef,
-    discount
-
-)
-
-VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 
     """, (
 
-        (
+        name,
+        mobile,
+        location,
+        house,
+        area,
+        city,
+        state,
+        pincode,
+        landmark,
+        items,
+        total,
+        payment_id,
+        payment_status,
+        "Pending",
+        created_at,
+        referral,
+        myRef,
+        discount
 
-    name,
-    mobile,
-    location,
-
-    house,
-    area,
-    city,
-    state,
-    pincode,
-    landmark,
-
-    items,
-    total,
-    payment_id,
-    payment_status,
-    "Pending",
-    created_at,
-    referral,
-    myRef,
-    discount
-
-)
     ))
 
     order_id = cursor.lastrowid
 
-    # REFERRAL SAVE
+    # ---------------- REFERRAL ----------------
 
     if referral and referral != myRef:
 
@@ -596,8 +589,6 @@ VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 
         ))
 
-        # REFERRAL COUNT
-
         cursor.execute(
             "SELECT count FROM referrals WHERE ref=?",
             (referral,)
@@ -622,8 +613,6 @@ VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 "INSERT INTO referrals(ref,count) VALUES(?,?)",
                 (referral, 1)
             )
-
-        # AUTO REWARD
 
         if new_count == 10:
 
@@ -660,6 +649,7 @@ VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     return {
         "message": "Order placed"
     }
+
 
 @app.post("/add-review")
 def add_review(data: dict):
@@ -733,31 +723,39 @@ def get_orders():
 
     for r in rows:
 
+        # ✅ Safe Items Parse
+        items = []
+
+        try:
+            if r[10]:
+                items = json.loads(r[10])
+        except Exception as e:
+            print("Items JSON Error:", e)
+            items = []
+
         orders.append({
+            "id": r[0],
+            "name": r[1],
+            "mobile": r[2],
+            "location": r[3],
 
-    "id": r[0],
-    "name": r[1],
-    "mobile": r[2],
-    "location": r[3],
+            "house": r[4],
+            "area": r[5],
+            "city": r[6],
+            "state": r[7],
+            "pincode": r[8],
+            "landmark": r[9],
 
-    "house": r[4],
-    "area": r[5],
-    "city": r[6],
-    "state": r[7],
-    "pincode": r[8],
-    "landmark": r[9],
-
-    "items": json.loads(r[10]) if r[10] else [],
-    "total": r[11],
-    "payment_id": r[12],
-    "payment_status": r[13],
-    "status": r[14],
-    "date": r[15],
-    "referral": r[16],
-    "myRef": r[17],
-    "discount": r[18]
-
-})
+            "items": items,
+            "total": r[11],
+            "payment_id": r[12],
+            "payment_status": r[13],
+            "status": r[14],
+            "date": r[15],
+            "referral": r[16],
+            "myRef": r[17],
+            "discount": r[18]
+        })
 
     conn.close()
 
@@ -1039,6 +1037,7 @@ def custom_reward(data: dict):
 
 @app.post("/cashfree-webhook")
 async def cashfree_webhook(request: Request):
+
     data = await request.json()
 
     print("WEBHOOK RECEIVED")
@@ -1059,16 +1058,30 @@ async def cashfree_webhook(request: Request):
         row = cursor.fetchone()
 
         if row:
+
             print("PENDING ORDER FOUND")
 
             order_data = json.loads(row[0])
 
+            # ✅ Farmer Details
             farmer = order_data.get("farmer", {})
+
+            name = farmer.get("name", "")
+            mobile = farmer.get("mobile", "")
+            location = farmer.get("location", "")
+            house = farmer.get("house", "")
+            area = farmer.get("area", "")
+            city = farmer.get("city", "")
+            state = farmer.get("state", "")
+            pincode = farmer.get("pincode", "")
+            landmark = farmer.get("landmark", "")
+
+            # ✅ Items
             items = json.dumps(order_data.get("items", []))
 
             cursor.execute("""
 
-           INSERT INTO orders(
+INSERT INTO orders(
 
     name,
     mobile,
@@ -1095,34 +1108,30 @@ VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 
             """, (
 
-                (
+                name,
+                mobile,
+                location,
+                house,
+                area,
+                city,
+                state,
+                pincode,
+                landmark,
 
-    order_data.get("name"),
-    order_data.get("mobile"),
-    order_data.get("location"),
+                items,
 
-    order_data.get("house"),
-    order_data.get("area"),
-    order_data.get("city"),
-    order_data.get("state"),
-    order_data.get("pincode"),
-    order_data.get("landmark"),
+                order_data.get("amount", 0),
 
-    items,
-    order_data.get("amount", 0),
+                data["data"]["payment"]["cf_payment_id"],
 
-    data["data"]["payment"]["cf_payment_id"],
+                "PAID",
+                "Pending",
 
-    "PAID",
-    "Pending",
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
 
-    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-
-    order_data.get("referral", ""),
-    order_data.get("myRef", ""),
-    order_data.get("discount", 0)
-
-)
+                order_data.get("referral", ""),
+                order_data.get("myRef", ""),
+                order_data.get("discount", 0)
 
             ))
 
@@ -1137,7 +1146,10 @@ VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 
         conn.close()
 
-    return {"status": "ok"}
+    return {
+        "status": "ok"
+    }
+
 
 @app.get("/test")
 def test():
