@@ -747,7 +747,7 @@ def get_orders():
     "pincode": r[8],
     "landmark": r[9],
 
-    "items": json.loads(r[10]),
+    "items": json.loads(r[10]) if r[10] else [],
     "total": r[11],
     "payment_id": r[12],
     "payment_status": r[13],
