@@ -147,12 +147,19 @@ CREATE TABLE IF NOT EXISTS products(
         pass
 
     # ORDERS
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS orders(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         mobile TEXT,
         location TEXT,
+        house TEXT,
+        area TEXT,
+        city TEXT,
+        state TEXT,
+        pincode TEXT,
+        landmark TEXT,
         items TEXT,
         total INTEGER,
         payment_id TEXT,
@@ -164,6 +171,36 @@ CREATE TABLE IF NOT EXISTS products(
         discount INTEGER
     )
     """)
+
+    try:
+        cursor.execute("ALTER TABLE orders ADD COLUMN house TEXT")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE orders ADD COLUMN area TEXT")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE orders ADD COLUMN city TEXT")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE orders ADD COLUMN state TEXT")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE orders ADD COLUMN pincode TEXT")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE orders ADD COLUMN landmark TEXT")
+    except:
+        pass
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS pending_orders(
@@ -446,6 +483,12 @@ def place_order(data: dict):
     name = farmer.get("name") or data.get("name")
     mobile = farmer.get("mobile") or data.get("mobile")
     location = farmer.get("location") or data.get("location")
+    house = farmer.get("house", "")
+    area = farmer.get("area", "")
+    city = farmer.get("city", "")
+    state = farmer.get("state", "")
+    pincode = farmer.get("pincode", "")
+    landmark = farmer.get("landmark", "")
 
     if not mobile:
         return {"error": "Mobile missing"}
@@ -472,39 +515,57 @@ def place_order(data: dict):
 
     INSERT INTO orders(
 
-        name,
-        mobile,
-        location,
-        items,
-        total,
-        payment_id,
-        payment_status,
-        status,
-        created_at,
-        referral,
-        myRef,
-        discount
-                   
+    name,
+    mobile,
+    location,
 
-    )
+    house,
+    area,
+    city,
+    state,
+    pincode,
+    landmark,
 
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
+    items,
+    total,
+    payment_id,
+    payment_status,
+    status,
+    created_at,
+    referral,
+    myRef,
+    discount
+
+)
+
+VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 
     """, (
 
-        name,
-        mobile,
-        location,
-        items,
-        total,
-        payment_id,
-        payment_status,
-        "Pending",
-        created_at,
-        referral,
-        myRef,
-        discount
+        (
 
+    name,
+    mobile,
+    location,
+
+    house,
+    area,
+    city,
+    state,
+    pincode,
+    landmark,
+
+    items,
+    total,
+    payment_id,
+    payment_status,
+    "Pending",
+    created_at,
+    referral,
+    myRef,
+    discount
+
+)
     ))
 
     order_id = cursor.lastrowid
@@ -674,21 +735,29 @@ def get_orders():
 
         orders.append({
 
-            "id": r[0],
-            "name": r[1],
-            "mobile": r[2],
-            "location": r[3],
-            "items": json.loads(r[4]),
-            "total": r[5],
-            "payment_id": r[6],
-            "payment_status": r[7],
-            "status": r[8],
-            "date": r[9],
-            "referral": r[10],
-            "myRef": r[11],
-            "discount": r[12]
+    "id": r[0],
+    "name": r[1],
+    "mobile": r[2],
+    "location": r[3],
 
-        })
+    "house": r[4],
+    "area": r[5],
+    "city": r[6],
+    "state": r[7],
+    "pincode": r[8],
+    "landmark": r[9],
+
+    "items": json.loads(r[10]),
+    "total": r[11],
+    "payment_id": r[12],
+    "payment_status": r[13],
+    "status": r[14],
+    "date": r[15],
+    "referral": r[16],
+    "myRef": r[17],
+    "discount": r[18]
+
+})
 
     conn.close()
 
@@ -999,39 +1068,61 @@ async def cashfree_webhook(request: Request):
 
             cursor.execute("""
 
-            INSERT INTO orders(
+           INSERT INTO orders(
 
-                name,
-                mobile,
-                location,
-                items,
-                total,
-                payment_id,
-                payment_status,
-                status,
-                created_at,
-                referral,
-                myRef,
-                discount
+    name,
+    mobile,
+    location,
+    house,
+    area,
+    city,
+    state,
+    pincode,
+    landmark,
+    items,
+    total,
+    payment_id,
+    payment_status,
+    status,
+    created_at,
+    referral,
+    myRef,
+    discount
 
-            )
+)
 
-            VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
+VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 
             """, (
 
-                order_data.get("name"),
-                order_data.get("mobile"),
-                order_data.get("location"),
-                items,
-                order_data.get("amount", 0),
-                data["data"]["payment"]["cf_payment_id"],
-                "PAID",
-                "Pending",
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                order_data.get("referral", ""),
-                order_data.get("myRef", ""),
-                order_data.get("discount", 0)
+                (
+
+    order_data.get("name"),
+    order_data.get("mobile"),
+    order_data.get("location"),
+
+    order_data.get("house"),
+    order_data.get("area"),
+    order_data.get("city"),
+    order_data.get("state"),
+    order_data.get("pincode"),
+    order_data.get("landmark"),
+
+    items,
+    order_data.get("amount", 0),
+
+    data["data"]["payment"]["cf_payment_id"],
+
+    "PAID",
+    "Pending",
+
+    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+
+    order_data.get("referral", ""),
+    order_data.get("myRef", ""),
+    order_data.get("discount", 0)
+
+)
 
             ))
 

@@ -794,8 +794,41 @@ font-weight:bold;
 📦 <b>Order ID:</b> ${o.id}<br><br>
 
 👤 <b>${o.name}</b><br>
-📞 ${o.mobile}<br>
-📍 ${o.location}<br>
+
+📞 <b>Mobile:</b> ${o.mobile}<br>
+
+🏠 <b>House:</b> ${o.house || "-"}<br>
+
+🛣️ <b>Area:</b> ${o.area || "-"}<br>
+
+🏙️ <b>City:</b> ${o.city || "-"}<br>
+
+🌍 <b>State:</b> ${o.state || "-"}<br>
+
+📮 <b>Pincode:</b> ${o.pincode || "-"}<br>
+
+📍 <b>Landmark:</b> ${o.landmark || "-"}<br>
+
+📌 <b>GPS Location:</b><br>
+${o.location}<br><br>
+
+<a
+href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.location)}"
+target="_blank"
+style="
+display:inline-block;
+background:#1976d2;
+color:white;
+padding:8px 14px;
+border-radius:6px;
+text-decoration:none;
+font-weight:bold;
+margin-bottom:10px;
+">
+🗺️ Open in Google Maps
+</a>
+
+<br><br>
 
 💰 <b>Total:</b> ₹${o.total}<br>
 

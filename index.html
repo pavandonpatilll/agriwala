@@ -896,17 +896,61 @@ transform:scale(1.05);
 
 <h2>🌾 Farmer Details</h2>
 
-<input id="name" placeholder="Name">
-<input id="mobile" placeholder="Mobile">
-<input id="location" placeholder="Village / City">
+<input
+id="name"
+placeholder="👤 Full Name"
+required>
 
+<input
+id="mobile"
+placeholder="📱 Mobile Number"
+maxlength="10"
+required>
 
-<button onclick="detectLocation()">📍 Detect Location</button>
+<input
+id="house"
+placeholder="🏠 House / Flat No."
+required>
 
-<button onclick="startStore()">Enter Store</button>
+<input
+id="area"
+placeholder="🛣️ Area / Street / Village"
+required>
+
+<input
+id="city"
+placeholder="🏙️ City"
+required>
+
+<input
+id="state"
+placeholder="🌍 State"
+required>
+
+<input
+id="pincode"
+placeholder="📮 Pincode"
+maxlength="6"
+required>
+
+<input
+id="landmark"
+placeholder="📍 Landmark (Optional)">
+
+<input
+id="location"
+placeholder="📌 GPS Location"
+readonly>
+
+<button onclick="detectLocation()">
+📍 Detect Current Location
+</button>
+
+<button onclick="startStore()">
+Enter Store
+</button>
 
 </div>
-
 
 <!-- STORE -->
 
@@ -1564,34 +1608,80 @@ document.getElementById("reviewsBox").innerHTML = `
 
 function startStore(){
 
-farmer.name=document.getElementById("name").value
-farmer.mobile=document.getElementById("mobile").value
-farmer.location=document.getElementById("location").value
+farmer.name = document.getElementById("name").value.trim();
+farmer.mobile = document.getElementById("mobile").value.trim();
+
+farmer.house = document.getElementById("house").value.trim();
+farmer.area = document.getElementById("area").value.trim();
+farmer.city = document.getElementById("city").value.trim();
+farmer.state = document.getElementById("state").value.trim();
+farmer.pincode = document.getElementById("pincode").value.trim();
+farmer.landmark = document.getElementById("landmark").value.trim();
+
+farmer.location = document.getElementById("location").value.trim();
+
+// ===== Validation =====
 
 if(farmer.name==""){
-alert("Enter name")
-return
+alert("Enter Full Name");
+return;
 }
 
 if(!/^[0-9]{10}$/.test(farmer.mobile)){
-alert("❌ Enter valid 10 digit mobile number")
-return
+alert("❌ Enter valid 10 digit mobile number");
+return;
 }
 
-localStorage.setItem("kisanUser",JSON.stringify(farmer))
+if(farmer.house==""){
+alert("❌ Enter House / Flat No.");
+return;
+}
+
+if(farmer.area==""){
+alert("❌ Enter Area / Street / Village");
+return;
+}
+
+if(farmer.city==""){
+alert("❌ Enter City");
+return;
+}
+
+if(farmer.state==""){
+alert("❌ Enter State");
+return;
+}
+
+if(!/^[0-9]{6}$/.test(farmer.pincode)){
+alert("❌ Enter valid 6 digit Pincode");
+return;
+}
+
+if(farmer.location==""){
+alert("❌ Please Detect Current Location");
+return;
+}
+
+// ===== Save User =====
+
+localStorage.setItem("kisanUser", JSON.stringify(farmer));
 localStorage.setItem("userName", farmer.name);
 localStorage.setItem("userMobile", farmer.mobile);
 
-document.getElementById("form").style.display="none"
-document.getElementById("store").style.display="block"
+document.getElementById("form").style.display = "none";
+document.getElementById("store").style.display = "block";
 
-loadProducts()
+loadProducts();
+
 // 🔥 auto referral attach
-let usedRef = localStorage.getItem("usedRef")
+let usedRef = localStorage.getItem("usedRef");
+
 if(usedRef){
-    farmer.referredBy = usedRef
+    farmer.referredBy = usedRef;
 }
+
 }
+
 
 /* LOGOUT */
 
