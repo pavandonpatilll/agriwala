@@ -150,26 +150,32 @@ CREATE TABLE IF NOT EXISTS products(
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS orders(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        mobile TEXT,
-        location TEXT,
-        house TEXT,
-        area TEXT,
-        city TEXT,
-        state TEXT,
-        pincode TEXT,
-        landmark TEXT,
-        items TEXT,
-        total INTEGER,
-        payment_id TEXT,
-        payment_status TEXT,
-        status TEXT,
-        created_at TEXT,
-        referral TEXT,
-        myRef TEXT,
-        discount INTEGER
-    )
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    name TEXT,
+    mobile TEXT,
+    location TEXT,
+
+    house TEXT,
+    area TEXT,
+    city TEXT,
+    state TEXT,
+    pincode TEXT,
+    landmark TEXT,
+
+    items TEXT,
+    total INTEGER,
+
+    payment_id TEXT,
+    payment_status TEXT,
+
+    status TEXT,
+    created_at TEXT,
+
+    referral TEXT,
+    myRef TEXT,
+    discount INTEGER
+)
     """)
 
     try:
@@ -1165,16 +1171,22 @@ def test():
 
     return rows
 
-@app.get("/test-orders")
-def test_orders():
+
+@app.get("/reset-orders")
+def reset_orders():
 
     conn = get_conn()
     cursor = conn.cursor()
 
-    cursor.execute("PRAGMA table_info(orders)")
+    # Delete old orders table
+    cursor.execute("DROP TABLE IF EXISTS orders")
 
-    rows = cursor.fetchall()
-
+    conn.commit()
     conn.close()
 
-    return rows
+    # Create new orders table
+    init_db()
+
+    return {
+        "message": "Orders table recreated successfully"
+    }
