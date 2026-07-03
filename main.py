@@ -1172,21 +1172,3 @@ def test():
     return rows
 
 
-@app.get("/reset-orders")
-def reset_orders():
-
-    conn = get_conn()
-    cursor = conn.cursor()
-
-    # Delete old orders table
-    cursor.execute("DROP TABLE IF EXISTS orders")
-
-    conn.commit()
-    conn.close()
-
-    # Create new orders table
-    init_db()
-
-    return {
-        "message": "Orders table recreated successfully"
-    }
