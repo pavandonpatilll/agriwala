@@ -1165,3 +1165,16 @@ def test():
 
     return rows
 
+@app.get("/test-orders")
+def test_orders():
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute("PRAGMA table_info(orders)")
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    return rows
