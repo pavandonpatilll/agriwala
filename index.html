@@ -884,6 +884,51 @@ transform:scale(1.05);
 
 }
 
+.variantGrid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px;
+margin-top:15px;
+}
+
+.variantBtn{
+width:100%;
+min-height:95px;
+padding:15px;
+border:2px solid #3cb043;
+border-radius:12px;
+background:#fff;
+cursor:pointer;
+font-size:18px;
+font-weight:bold;
+transition:.3s;
+}
+
+.variantBtn:hover{
+transform:scale(1.03);
+background:#f7fff7;
+}
+
+.mlTitle{
+font-size:18px;
+font-weight:bold;
+}
+
+.mlPrice{
+margin-top:8px;
+}
+
+.mlAvailable{
+color:#16a34a;
+font-size:16px;
+font-weight:bold;
+}
+
+.mlUnavailable{
+color:#e53935;
+font-size:15px;
+font-weight:bold;
+}
 
 </style>
 </head>
@@ -1463,6 +1508,13 @@ return;
 
 document.getElementById("store").style.display="none";
 document.getElementById("productPage").style.display="block";
+
+history.pushState(
+    { page: "product" },
+    "",
+    "#product"
+);
+
 document.getElementById("productPage").scrollTop=0;
 
 // ===== Images =====
@@ -1492,6 +1544,28 @@ document.getElementById("thumb4").onclick=()=>showImage(3);
 // ===== Product =====
 
 document.getElementById("pName").innerText=selectedProduct.name;
+
+// ===== Size Price Show =====
+
+document.getElementById("price100Text").innerHTML =
+selectedProduct.price100
+? `<span class="mlAvailable">₹${selectedProduct.price100}</span>`
+: `<span class="mlUnavailable">Not Available</span>`;
+
+document.getElementById("price250Text").innerHTML =
+selectedProduct.price250
+? `<span class="mlAvailable">₹${selectedProduct.price250}</span>`
+: `<span class="mlUnavailable">Not Available</span>`;
+
+document.getElementById("price500Text").innerHTML =
+selectedProduct.price500
+? `<span class="mlAvailable">₹${selectedProduct.price500}</span>`
+: `<span class="mlUnavailable">Not Available</span>`;
+
+document.getElementById("price1000Text").innerHTML =
+selectedProduct.price1000
+? `<span class="mlAvailable">₹${selectedProduct.price1000}</span>`
+: `<span class="mlUnavailable">Not Available</span>`;
 
 document.getElementById("pDesc").innerText=
 selectedProduct.description || selectedProduct.category;
@@ -3006,6 +3080,23 @@ document.getElementById("supportOptions").style.display="none";
 });
 
 
+window.addEventListener("popstate", function () {
+
+    // Agar Product Page open hai
+    if (document.getElementById("productPage").style.display === "block") {
+
+        document.getElementById("productPage").style.display = "none";
+        document.getElementById("store").style.display = "block";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+});
+
 
 </script>
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
@@ -3048,16 +3139,31 @@ document.getElementById("supportOptions").style.display="none";
 
 <h3>Select Size</h3>
 
-<button class="variantBtn" onclick="changeVariant('100')">100 ml</button>
+<div class="variantGrid">
 
-<button class="variantBtn" onclick="changeVariant('250')">250 ml</button>
+<button class="variantBtn" onclick="changeVariant('100')">
+<div class="mlTitle">100 ml</div>
+<div id="price100Text" class="mlPrice">Not Available</div>
+</button>
 
-<button class="variantBtn" onclick="changeVariant('500')">500 ml</button>
+<button class="variantBtn" onclick="changeVariant('250')">
+<div class="mlTitle">250 ml</div>
+<div id="price250Text" class="mlPrice">Not Available</div>
+</button>
 
-<button class="variantBtn" onclick="changeVariant('1000')">1 L</button>
+<button class="variantBtn" onclick="changeVariant('500')">
+<div class="mlTitle">500 ml</div>
+<div id="price500Text" class="mlPrice">Not Available</div>
+</button>
+
+<button class="variantBtn" onclick="changeVariant('1000')">
+<div class="mlTitle">1 L</div>
+<div id="price1000Text" class="mlPrice">Not Available</div>
+</button>
 
 </div>
 
+</div>
 
 <div class="qtyBox">
 
@@ -3085,7 +3191,7 @@ onclick="addSelectedToCart()"
 style="
 background:linear-gradient(45deg,#edeceb,#f5f0ef);
 color:rgb(7, 2, 2);
-padding:14px 28px;
+padding:24px 80px;
 border:none;
 border-radius:10px;
 font-size:17px;
@@ -3103,7 +3209,7 @@ onclick="buySelectedProduct()"
 style="
 background:linear-gradient(45deg,#1eb73c,#06fa16);
 color:white;
-padding:14px 28px;
+padding:24px 80px;
 border:none;
 border-radius:10px;
 font-size:17px;

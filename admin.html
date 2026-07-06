@@ -202,7 +202,15 @@
             <h3>Add Product</h3>
             <input id="productName" placeholder="Name">
             <input id="productPrice" placeholder="Price">
-            <input id="productCategory" placeholder="Category">
+
+            <input list="categoryList" id="productCategory" placeholder="Category">
+           <datalist id="categoryList">
+           <option value="Pesticides">
+           <option value="Herbicides">
+           <option value="Fungicides">
+           <option value="Seeds">
+           <option value="Insecticides">
+           </datalist>
             <textarea id="description" placeholder="Product Description"></textarea>
             <input id="price100" placeholder="100 ml Price">
 
