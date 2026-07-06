@@ -175,19 +175,23 @@ transform:translateY(-5px) scale(1.05);
 
 .categoriesBar{
 
-display:flex;
+display:grid;
 
-justify-content:center;
+grid-auto-flow:column;
 
-align-items:center;
-
-overflow-x:auto;
+grid-template-rows:repeat(2,auto);
 
 gap:12px;
 
+overflow-x:auto;
+
+overflow-y:hidden;
+
 padding:15px;
 
-margin:15px auto;
+scroll-behavior:smooth;
+
+-webkit-overflow-scrolling:touch;
 
 scrollbar-width:none;
 
@@ -199,13 +203,13 @@ display:none;
 
 .catBtn{
 
-white-space:nowrap;
+min-width:190px;
 
-padding:20px 70px;
+padding:40px 40px;
 
-background:#481741;
+background:#2c0e2b;
 
-color:oklch(100% 0.00011 271.152);
+color:white;
 
 border-radius:25px;
 
@@ -213,9 +217,11 @@ font-weight:bold;
 
 cursor:pointer;
 
-transition:.3s;
+text-align:center;
 
-flex-shrink:0;
+white-space:nowrap;
+
+transition:.3s;
 
 }
 
@@ -1088,29 +1094,15 @@ Logout
 
 <div class="categoriesBar">
 
-    <div class="catBtn active" onclick="loadProducts()">
-        🤗 For You
-    </div>
-
-    <div class="catBtn" onclick="filter('Seeds')">🌱 Seeds</div>
-
-    <div class="catBtn" onclick="filter('Fertilizer')">🧪 Fertilizer</div>
-
-    <!-- <div class="catBtn" onclick="filter('Organic Manure')">🌱 Organic Manure</div> -->
-
-    <div class="catBtn" onclick="filter('Micronutrients')">💧 Micronutrients</div>
-
-</div>
-
-<div class="categoriesBar">
-
-    <div class="catBtn" onclick="filter('Plant Growth Promoter')">🌿 Plant Growth</div>
-
-    <div class="catBtn" onclick="filter('Pesticide')">🐛 Pesticide</div>
-
-    <div class="catBtn" onclick="filter('Fungicide')">🍄 Fungicide</div>
-
-    <div class="catBtn" onclick="filter('Herbicide')">🌿 Herbicide</div>
+<div class="catBtn active" onclick="loadProducts()">🤗 For You</div>
+<div class="catBtn" onclick="filter('Seeds')">🌱 Seeds</div>
+<div class="catBtn" onclick="filter('Fertilizer')">🧪 Fertilizer</div>
+<div class="catBtn" onclick="filter('Organic Manure')">🌱 Organic Manure</div>
+<div class="catBtn" onclick="filter('Micronutrients')">💧 Micronutrients</div>
+<div class="catBtn" onclick="filter('Plant Growth Promoter')">🌿 Plant Growth</div>
+<div class="catBtn" onclick="filter('Pesticide')">🐛 Pesticide</div>
+<div class="catBtn" onclick="filter('Fungicide')">🍄 Fungicide</div>
+<div class="catBtn" onclick="filter('Herbicide')">🌿 Herbicide</div>
 
 </div>
 
