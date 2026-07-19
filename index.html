@@ -1829,6 +1829,8 @@ checkout()
 
 function openCart(){
 
+history.pushState({page:"cart"}, "", "#cart");
+
 document.getElementById("store").style.display="none"
 document.getElementById("cartPage").style.display="block"
 
@@ -2402,7 +2404,9 @@ window.onload = function () {
         document.getElementById("form").style.display = "block";
         document.getElementById("store").style.display = "none";
     }
+
 }
+
 
 async function loadReward(){
 
@@ -3071,10 +3075,23 @@ document.getElementById("supportOptions").style.display="none";
 
 });
 
-
 window.addEventListener("popstate", function () {
 
-    // Agar Product Page open hai
+    // 🛒 Cart Page open hai
+    if (document.getElementById("cartPage").style.display === "block") {
+
+        document.getElementById("cartPage").style.display = "none";
+        document.getElementById("store").style.display = "block";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        return;
+    }
+
+    // 📦 Product Page open hai
     if (document.getElementById("productPage").style.display === "block") {
 
         document.getElementById("productPage").style.display = "none";
@@ -3085,6 +3102,7 @@ window.addEventListener("popstate", function () {
             behavior: "smooth"
         });
 
+        return;
     }
 
 });
