@@ -959,24 +959,10 @@ maxlength="10"
 required>
 
 <input
-id="house"
-placeholder="🏠 House / Flat No."
-required>
-
-<input
 id="area"
 placeholder="🛣️ Area / Street / Village"
 required>
 
-<input
-id="city"
-placeholder="🏙️ City"
-required>
-
-<input
-id="state"
-placeholder="🌍 State"
-required>
 
 <input
 id="pincode"
@@ -1678,10 +1664,7 @@ function startStore(){
 farmer.name = document.getElementById("name").value.trim();
 farmer.mobile = document.getElementById("mobile").value.trim();
 
-farmer.house = document.getElementById("house").value.trim();
 farmer.area = document.getElementById("area").value.trim();
-farmer.city = document.getElementById("city").value.trim();
-farmer.state = document.getElementById("state").value.trim();
 farmer.pincode = document.getElementById("pincode").value.trim();
 farmer.landmark = document.getElementById("landmark").value.trim();
 
@@ -1699,25 +1682,12 @@ alert("❌ Enter valid 10 digit mobile number");
 return;
 }
 
-if(farmer.house==""){
-alert("❌ Enter House / Flat No.");
-return;
-}
 
 if(farmer.area==""){
 alert("❌ Enter Area / Street / Village");
 return;
 }
 
-if(farmer.city==""){
-alert("❌ Enter City");
-return;
-}
-
-if(farmer.state==""){
-alert("❌ Enter State");
-return;
-}
 
 if(!/^[0-9]{6}$/.test(farmer.pincode)){
 alert("❌ Enter valid 6 digit Pincode");
