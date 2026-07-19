@@ -1320,7 +1320,7 @@ if(!localStorage.getItem("myRef")){
 }
 
 let farmer={}
-let cart=[]
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let products=[]
 let currentSearch = "";
 let variantPrice = 0;
@@ -1370,6 +1370,7 @@ async function loadProducts(){
 
     }
 
+    updateCartCount();
 }
 
 
@@ -1982,8 +1983,13 @@ body: JSON.stringify(order)
 alert("💵 COD ORDER PLACED");
 
 cart = cart.filter(i => i.cod === false);
+
+localStorage.setItem("cart", JSON.stringify(cart));
+
 openCart();
+
 updateCartCount();
+
 }
 
 async function checkoutPAID(){
@@ -2024,22 +2030,28 @@ alert("💳 Payment Started");
 }
 
 function removeCart(i){
-cart.splice(i,1)
-openCart()
-document.getElementById("cartCount").innerText=cart.length
+
+cart.splice(i,1);
+
+localStorage.setItem("cart", JSON.stringify(cart));
+
+openCart();
+
+updateCartCount();
+
 }
 
 function updateCartCount(){
 
-let totalQty = 0
+localStorage.setItem("cart", JSON.stringify(cart));
+
+let totalQty = 0;
 
 cart.forEach(item=>{
+    totalQty += item.qty;
+});
 
-totalQty += item.qty
-
-})
-
-document.getElementById("cartCount").innerText = totalQty
+document.getElementById("cartCount").innerText = totalQty;
 
 }
 
@@ -2367,8 +2379,9 @@ alert("❌ Error tracking")
 /* AUTO LOAD */
 window.onload = function () {
 
-    // loadBanners();
-    // loadWallet();
+ // loadBanners();
+ // loadWallet();
+    updateCartCount();
     loadReward();
     loadMyReferrals();
 
@@ -2661,20 +2674,44 @@ updatePrice();
 
 function addSelectedToCart(){
 
+let existing = cart.find(item => item.id == selectedProduct.id);
+
+if(existing){
+
+existing.qty += qty;
+
+}else{
+
 cart.push({
+
+id: selectedProduct.id,
+
 name: selectedProduct.name,
+
 price: selectedProduct.price,
+
 discount: selectedProduct.discount,
+
 image: selectedProduct.image,
+
 qty: qty,
+
 cod: selectedProduct.cod,
+
 category: selectedProduct.category
+
 });
 
-updateCartCount();
-alert("Added To Cart");
 }
 
+// Save Cart
+localStorage.setItem("cart", JSON.stringify(cart));
+
+updateCartCount();
+
+alert("Added To Cart");
+
+}
 
 function changePhoto(src){
 
